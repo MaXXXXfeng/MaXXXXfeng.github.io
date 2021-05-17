@@ -8,7 +8,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
 
 <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css" integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous">
-<link rel="shortcut icon" href="https://MaXXXXfeng.github.io/favicon.ico?v=1621183537756">
+<link rel="shortcut icon" href="https://MaXXXXfeng.github.io/favicon.ico?v=1621269195702">
 <link rel="stylesheet" href="https://MaXXXXfeng.github.io/styles/main.css">
 
 
@@ -20,6 +20,8 @@
 
     <meta name="description" content="醉里挑灯看剑">
     
+      <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.0/katex.min.css">
+    
   </head>
   <body>
     <div id="app" class="main">
@@ -28,7 +30,7 @@
   <div class="top-container" data-aos="fade-right">
     <div class="top-header-container">
       <a class="site-title-container" href="https://MaXXXXfeng.github.io">
-        <img src="https://MaXXXXfeng.github.io/images/avatar.png?v=1621183537756" class="site-logo">
+        <img src="https://MaXXXXfeng.github.io/images/avatar.png?v=1621269195702" class="site-logo">
         <h1 class="site-title">Max Blog</h1>
       </a>
       <div class="menu-btn" @click="menuVisible = !menuVisible">
@@ -67,6 +69,10 @@
     <div class="social-container">
       
         
+          <a class="social-link" href="https://github.com/MaXXXXfeng/" target="_blank">
+            <i class="fab fa-github"></i>
+          </a>
+        
       
         
       
@@ -89,6 +95,30 @@
 
       <div class="main-container">
         <div class="content-container" data-aos="fade-up">
+          
+            <article class="post-item">
+              <div class="left">
+                <a href="https://MaXXXXfeng.github.io/post/risk-evaluation/">
+                  <h2 class="post-title">风控模型评估指标总结</h2>
+                </a>
+                <div class="post-date">
+                  2021-05-17
+                </div>
+                <div class="post-abstract">
+                  <script type="text/javascript"
+src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+<p>风控模型中常见的评估指标总结。</p>
+
+                </div>
+              </div>
+              
+                <a class="right" href="https://MaXXXXfeng.github.io/post/risk-evaluation/">
+                  <div class="feature-container" style="background-image: url('https://raw.githubusercontent.com/MaXXXXfeng/typora-res/main/data/20210518000118.jpg')">
+                  </div>
+                </a>
+              
+            </article>
           
             <article class="post-item">
               <div class="left">
@@ -157,6 +187,11 @@ var app = new Vue({
 
 </script>
 
+
+  <script src="https://cdn.bootcss.com/highlight.js/9.12.0/highlight.min.js"></script>
+  <script>
+    hljs.initHighlightingOnLoad()
+  </script>
 
 
 
