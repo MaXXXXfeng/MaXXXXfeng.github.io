@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8" >
 
-<title>关于 | Max Blog</title>
+<title>开发 | Max Blog</title>
 <meta name="description" content="醉里挑灯看剑">
 
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
@@ -13,12 +13,6 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.0/katex.min.css">
 <link rel="stylesheet" href="https://MaXXXXfeng.github.io/styles/main.css">
 
-
-  
-    <link rel="stylesheet" href="https://unpkg.com/gitalk/dist/gitalk.css" />
-  
-
-  
 
 
 <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
@@ -101,31 +95,34 @@
 
       <div class="main-container">
         <div class="content-container" data-aos="fade-up">
-          <div class="post-detail">
-            <h2 class="post-title">关于</h2>
-            <div class="post-date">2019-01-25</div>
-            
-            <div class="post-content">
-              <blockquote>
-<pre><code>             此心安处是吾乡 
-</code></pre>
-</blockquote>
-<p>Hello, 我是Max,  NLP&amp;风控&amp;算法工程师。</p>
-<figure data-type="image" tabindex="1"><img src="https://MaXXXXfeng.github.io/post-images/1621349707136.jpg" alt="" loading="lazy"></figure>
+          <h2 class="current-tag">标签: 开发</h2>
+          
+            <article class="post-item">
+              <div class="left">
+                <a href="https://MaXXXXfeng.github.io/post/flask-project-tree/">
+                  <h2 class="post-title">Flask基本项目结构</h2>
+                </a>
+                <div class="post-date">
+                  2021-05-14
+                </div>
+                <div class="post-abstract">
+                  <p>简单易上手的flask任务模板</p>
 
-            </div>
-            
-            
-
-            
+                </div>
+              </div>
               
-                <div id="gitalk-container" data-aos="fade-in"></div>
+                <a class="right" href="https://MaXXXXfeng.github.io/post/flask-project-tree/">
+                  <div class="feature-container" style="background-image: url('https://MaXXXXfeng.github.io/post-images/flask-project-tree.png')">
+                  </div>
+                </a>
               
+            </article>
+          
 
-              
-            
-
-          </div>
+          <div class="pagination-container">
+  
+  
+</div>
 
         </div>
       </div>
@@ -147,29 +144,6 @@ var app = new Vue({
 })
 
 </script>
-
-
-
-  
-    <script src="https://unpkg.com/gitalk/dist/gitalk.min.js"></script>
-    <script>
-
-      var gitalk = new Gitalk({
-        clientID: 'd4340f15bb5174d34269',
-        clientSecret: 'a8044523d5c79dc56062fcdaae7bbc97731a09ad',
-        repo: 'MaXXXXfeng.github.io',
-        owner: 'MaXXXXfeng',
-        admin: ['MaXXXXfeng'],
-        id: (location.pathname).substring(0, 49),      // Ensure uniqueness and length less than 50
-        distractionFreeMode: false  // Facebook-like distraction free mode
-      })
-
-      gitalk.render('gitalk-container')
-
-    </script>
-  
-
-  
 
 
 

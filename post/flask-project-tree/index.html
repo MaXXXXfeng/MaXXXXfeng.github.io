@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8" >
 
-<title>关于 | Max Blog</title>
+<title>Flask基本项目结构 | Max Blog</title>
 <meta name="description" content="醉里挑灯看剑">
 
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
@@ -102,19 +102,101 @@
       <div class="main-container">
         <div class="content-container" data-aos="fade-up">
           <div class="post-detail">
-            <h2 class="post-title">关于</h2>
-            <div class="post-date">2019-01-25</div>
+            <h2 class="post-title">Flask基本项目结构</h2>
+            <div class="post-date">2021-05-14</div>
+            
+              <div class="feature-container" style="background-image: url('https://MaXXXXfeng.github.io/post-images/flask-project-tree.png')">
+              </div>
             
             <div class="post-content">
-              <blockquote>
-<pre><code>             此心安处是吾乡 
+              <p>简单易上手的flask任务模板</p>
+<!-- more -->
+<p>基于之前接触的一些flask的开发，这里做一个简单的结构模板。</p>
+<h3 id="目录结构">目录结构</h3>
+<pre><code>Project name/  # 项目名
+├── deploy # docker/k8s 等配置配置文件
+├── data # 数据存放
+├── Project name  # 应用名
+│   ├── __init__.py  # 初始化程序,用来注册蓝图
+│   ├── config.py  # 配置信息
+│   ├── handlers  # 接口代码
+│   └── utils  # 逻辑代码
+├── test # 测试文件
+├── .gitignore # git 信息
+├── requirements.txt # 相关依赖
+├── README.md # 项目文档
+└── manage.py  # 启动程序
 </code></pre>
-</blockquote>
-<p>Hello, 我是Max,  NLP&amp;风控&amp;算法工程师。</p>
-<figure data-type="image" tabindex="1"><img src="https://MaXXXXfeng.github.io/post-images/1621349707136.jpg" alt="" loading="lazy"></figure>
+<h3 id="示例">示例</h3>
+<p>这里做一个简单的示例，实现一个简单的接口功能。后续会增加接口的功能。</p>
+<p><strong>定义接口</strong><br>
+在handlers里新建img_api.py</p>
+<pre><code>from flask import Blueprint
+
+img_tansfrom = Blueprint('img_transform',__name__)
+
+@img_tansfrom.route('/img/index',methods=['GET'])
+def index():
+    return 'Index'
+</code></pre>
+<p>这里看到定义了一个简单的index的接口，访问成功会返回index。<br>
+<strong>注册</strong><br>
+在handlers里创建_<em>init_</em>.py，注册蓝图</p>
+<pre><code>from img_transform.handlers.img_api import img_tansfrom
+
+def init_app(app):
+    app.register_blueprint(img_tansfrom)
+</code></pre>
+<p>在project目录下 创建_<em>init_</em>.py，创建app</p>
+<pre><code>from flask import Flask
+from img_transform import handlers
+
+def create_app():
+    app = Flask(__name__)
+    register_extensions(app)
+    return app
+
+def register_extensions(app):
+    handlers.init_app(app)
+
+</code></pre>
+<p><strong>运行</strong><br>
+修改manange.py</p>
+<pre><code>from img_transform import create_app
+
+app = create_app()
+
+if __name__ =='__main__':
+    app.run()
+</code></pre>
+<p>在命令行里运行</p>
+<pre><code>python manage.py 
+</code></pre>
+<p>启动服务，访问接口可以查看接口结果。</p>
 
             </div>
             
+              <div class="tag-container">
+                
+                  <a href="https://MaXXXXfeng.github.io/tag/development/" class="tag">
+                    开发
+                  </a>
+                
+                  <a href="https://MaXXXXfeng.github.io/tag/python/" class="tag">
+                    python
+                  </a>
+                
+              </div>
+            
+            
+              <div class="next-post">
+                <div class="next">下一篇</div>
+                <a href="https://MaXXXXfeng.github.io/post/sublime-repl/">
+                  <h3 class="post-title">
+                    Sublime插件sublimeREPL快捷键无响应问题
+                  </h3>
+                </a>
+              </div>
             
 
             
