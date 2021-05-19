@@ -2,7 +2,7 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>https://MaXXXXfeng.github.io</id>
     <title>Max Blog</title>
-    <updated>2021-05-18T15:41:27.911Z</updated>
+    <updated>2021-05-19T13:48:05.929Z</updated>
     <generator>https://github.com/jpmonette/feed</generator>
     <link rel="alternate" href="https://MaXXXXfeng.github.io"/>
     <link rel="self" href="https://MaXXXXfeng.github.io/atom.xml"/>
@@ -10,6 +10,191 @@
     <logo>https://MaXXXXfeng.github.io/images/avatar.png</logo>
     <icon>https://MaXXXXfeng.github.io/favicon.ico</icon>
     <rights>All rights reserved 2021, Max Blog</rights>
+    <entry>
+        <title type="html"><![CDATA[采样方法笔记]]></title>
+        <id>https://MaXXXXfeng.github.io/post/risk-sampling/</id>
+        <link href="https://MaXXXXfeng.github.io/post/risk-sampling/">
+        </link>
+        <updated>2021-05-19T13:44:55.000Z</updated>
+        <summary type="html"><![CDATA[<p>基于imbalance learn的采样方法研究，主要为过采样</p>
+]]></summary>
+        <content type="html"><![CDATA[<p>基于imbalance learn的采样方法研究，主要为过采样</p>
+<!-- more -->
+<h2 id="1-概述">1 概述</h2>
+<p>针对不平衡的数据样本，需要进行采样。</p>
+<p>因为正样本太少，同时负样本太多，导致模型无法学习到足够的负样本信息。</p>
+<p>同时，会导致模型对负样本赋予过多的权重。</p>
+<p>因此，针对正负样本分布不均衡的情况，需要进行采样。</p>
+<h2 id="2-采样方法">2 采样方法</h2>
+<h3 id="21-欠采样">2.1 欠采样</h3>
+<p>欠采样(Undersampling),从反例中随机抽取数据，与正例合并。</p>
+<p>丢弃了大量数据，有可能会导致一些信息的缺失。有可能会导致过拟合的情况，因为无法泛化到更大的数据集。</p>
+<p>实际效果未经过测试，但是不建议使用。</p>
+<h3 id="22-过采样">2.2 过采样</h3>
+<p>过采样(Oversampling),主要思路为针对数量少的正类，进行数据的扩充。可以通过复制的方法(random)或者一些人工合成数据的方法(比如smote)。</p>
+<p>具体的实现，参考imbalanced-learn这个库</p>
+<p>文档地址: https://imbalanced-learn.org/stable/</p>
+<h4 id="221-随机抽样">2.2.1 随机抽样</h4>
+<h5 id="介绍">介绍</h5>
+<p>通过随机采样的方法，重复正例数据。实际上没有引入跟多的数据。如果过度的复制正例，有可能会加大噪声对模型的影响。 同时也有可能导致过拟合。</p>
+<h5 id="代码">代码</h5>
+<pre><code class="language-python">from imblearn.over_sampling import RandomOverSampler 
+ros = RandomOverSampler(random_state=42)
+X_res, y_res = ros.fit_resample(X, y)
+</code></pre>
+<h5 id="注意问题">注意问题</h5>
+<p>注意： 随机采样方法中用到的采样器，参数如下：</p>
+<pre><code class="language-python">RandomOverSampler(*, sampling_strategy='auto', random_state=None, shrinkage=None)
+</code></pre>
+<p>sampling_strategy 参数用来控制抽样比例，可以直接通过输入小数来确认抽样比例。使用默认的话会自动把正样本抽到1比1。大概率导致<strong>过拟合</strong>。</p>
+<p>具体文档：</p>
+<blockquote>
+<p><strong>sampling_strategy</strong>float, str, dict or callable, default=’auto’</p>
+<p>Sampling information to resample the data set.</p>
+<ul>
+<li>
+<p>When <code>float</code>, it corresponds to the desired ratio of the number of samples in the minority class over the number of samples in the majority class after resampling. Therefore, the ratio is expressed as <img src="https://raw.githubusercontent.com/MaXXXXfeng/typora-res/main/data/20210328001430.svg" alt="\alpha_{os} = N_{rm} / N_{M}" loading="lazy"> where <img src="https://raw.githubusercontent.com/MaXXXXfeng/typora-res/main/data/20210328001519.svg" alt="N_{rm}" loading="lazy"> is the number of samples in the minority class after resampling and <img src="https://raw.githubusercontent.com/MaXXXXfeng/typora-res/main/data/20210328001414.svg" alt="N_{M}" loading="lazy"> is the number of samples in the majority class.</p>
+<blockquote>
+<p>Warning</p>
+<p><code>float</code> is only available for <strong>binary</strong> classification. An error is raised for multi-class classification.</p>
+</blockquote>
+</li>
+<li>
+<p>When <code>str</code>, specify the class targeted by the resampling. The number of samples in the different classes will be equalized. Possible choices are:</p>
+<blockquote>
+<p><code>'minority'</code>: resample only the minority class;</p>
+<p><code>'not minority'</code>: resample all classes but the minority class;</p>
+<p><code>'not majority'</code>: resample all classes but the majority class;</p>
+<p><code>'all'</code>: resample all classes;</p>
+<p><code>'auto'</code>: equivalent to <code>'not majority'</code>.</p>
+</blockquote>
+</li>
+<li>
+<p>When <code>dict</code>, the keys correspond to the targeted classes. The values correspond to the desired number of samples for each targeted class.</p>
+</li>
+<li>
+<p>When callable, function taking <code>y</code> and returns a <code>dict</code>. The keys correspond to the targeted classes. The values correspond to the desired number of samples for each class.</p>
+</li>
+</ul>
+</blockquote>
+<h4 id="222-smote">2.2.2 SMOTE</h4>
+<h5 id="介绍-2">介绍</h5>
+<p>SMOTE全称是Synthetic Minority Oversampling Technique即合成少数类过采样技术，基本思想是对少数类别样本进行合成，是基于随机采样的变种。</p>
+<p>抽样步骤：</p>
+<ul>
+<li>根据样本不平衡的比例设置一个采样倍率N。</li>
+<li>基于KNN，计算每个少量样本的K个近邻(欧式距离)。</li>
+<li>随机选择一个样本与原样本进行线性插值:在两个样本的连线中随机选一个点。</li>
+<li>重复以上操作，直到采样数量满足倍率N。</li>
+</ul>
+<h5 id="代码-2">代码</h5>
+<pre><code class="language-python">from imblearn.over_sampling import SMOTE 
+sm = SMOTE(random_state=42)
+x_res, y_res = sm.fit_resample(x, y)
+</code></pre>
+<h5 id="注意问题-2">注意问题</h5>
+<ul>
+<li>当前的库不支持字符型数据，需要编码</li>
+<li>不支持Nan，需要填充</li>
+</ul>
+<h4 id="223-smotenc">2.2.3 SMOTENC</h4>
+<h5 id="介绍-3">介绍</h5>
+<p>原理与smote相同，只是支持数值变量与类别变量混合。</p>
+<h5 id="代码-3">代码</h5>
+<pre><code class="language-python">from imblearn.over_sampling import SMOTENC
+sm = SMOTENC(random_state=42, categorical_features=[18, 19]) # 需注明类别变量的索引
+X_res, y_res = sm.fit_resample(X, y)
+</code></pre>
+<h4 id="224-smoten">2.2.4 SMOTEN</h4>
+<h5 id="介绍-4">介绍</h5>
+<p>原理与smote相同，只支持类别变量。</p>
+<h5 id="代码-4">代码</h5>
+<pre><code class="language-python">from imblearn.over_sampling import SMOTEN
+sampler = SMOTEN(random_state=0)
+x_res, y_res = sampler.fit_resample(x y)
+</code></pre>
+<h4 id="225-adasyn">2.2.5 ADASYN</h4>
+<h5 id="介绍-5">介绍</h5>
+<p>ADASYN(Adaptive Synthetic),自适应综合过采样方法。</p>
+<ul>
+<li>
+<p>计算正类与负类的比例</p>
+</li>
+<li>
+<p>计算要生产的正例总数，由参数β控制比例,<span class="katex"><span class="katex-mathml"><math><semantics><mrow><msub><mi>m</mi><mi>l</mi></msub><mo separator="true">,</mo><msub><mi>m</mi><mi>s</mi></msub></mrow><annotation encoding="application/x-tex">m_l,m_s</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.625em;vertical-align:-0.19444em;"></span><span class="mord"><span class="mord mathdefault">m</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.33610799999999996em;"><span style="top:-2.5500000000000003em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathdefault mtight" style="margin-right:0.01968em;">l</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mpunct">,</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord"><span class="mord mathdefault">m</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.151392em;"><span style="top:-2.5500000000000003em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathdefault mtight">s</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span></span>对应多数类少数类的数量</p>
+<p class='katex-block'><span class="katex-display"><span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>G</mi><mo>=</mo><mo>(</mo><msub><mi>m</mi><mi>l</mi></msub><mo>−</mo><msub><mi>m</mi><mi>s</mi></msub><mo>)</mo><mi>β</mi></mrow><annotation encoding="application/x-tex">G = (m_l-m_s)\beta
+</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.68333em;vertical-align:0em;"></span><span class="mord mathdefault">G</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mopen">(</span><span class="mord"><span class="mord mathdefault">m</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.33610799999999996em;"><span style="top:-2.5500000000000003em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathdefault mtight" style="margin-right:0.01968em;">l</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">−</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord"><span class="mord mathdefault">m</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.151392em;"><span style="top:-2.5500000000000003em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathdefault mtight">s</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mclose">)</span><span class="mord mathdefault" style="margin-right:0.05278em;">β</span></span></span></span></span></p>
+</li>
+<li>
+<p>对每个正例计算KNN，并计算<span class="katex"><span class="katex-mathml"><math><semantics><mrow><msub><mi>r</mi><mi>i</mi></msub></mrow><annotation encoding="application/x-tex">r_i</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.58056em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord mathdefault" style="margin-right:0.02778em;">r</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.31166399999999994em;"><span style="top:-2.5500000000000003em;margin-left:-0.02778em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathdefault mtight">i</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span></span></p>
+<p class='katex-block'><span class="katex-display"><span class="katex"><span class="katex-mathml"><math><semantics><mrow><msub><mi>r</mi><mi>i</mi></msub><mo>=</mo><mfrac><mrow><mi mathvariant="normal">#</mi><mi mathvariant="normal">负</mi><mi mathvariant="normal">类</mi></mrow><mi>k</mi></mfrac></mrow><annotation encoding="application/x-tex">r_i = \frac{\#负类}{k}
+</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.58056em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord mathdefault" style="margin-right:0.02778em;">r</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.31166399999999994em;"><span style="top:-2.5500000000000003em;margin-left:-0.02778em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathdefault mtight">i</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:2.0574399999999997em;vertical-align:-0.686em;"></span><span class="mord"><span class="mopen nulldelimiter"></span><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:1.3714399999999998em;"><span style="top:-2.314em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord mathdefault" style="margin-right:0.03148em;">k</span></span></span><span style="top:-3.23em;"><span class="pstrut" style="height:3em;"></span><span class="frac-line" style="border-bottom-width:0.04em;"></span></span><span style="top:-3.677em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord">#</span><span class="mord cjk_fallback">负</span><span class="mord cjk_fallback">类</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.686em;"><span></span></span></span></span></span><span class="mclose nulldelimiter"></span></span></span></span></span></span></p>
+<p><span class="katex"><span class="katex-mathml"><math><semantics><mrow><msub><mi>r</mi><mi>i</mi></msub></mrow><annotation encoding="application/x-tex">r_i</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.58056em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord mathdefault" style="margin-right:0.02778em;">r</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.31166399999999994em;"><span style="top:-2.5500000000000003em;margin-left:-0.02778em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathdefault mtight">i</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span></span>表示负类(多数类)的主导地位。值越高表示这个更难学习。</p>
+</li>
+<li>
+<p>归一化<span class="katex"><span class="katex-mathml"><math><semantics><mrow><msub><mi>r</mi><mi>i</mi></msub></mrow><annotation encoding="application/x-tex">r_i</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.58056em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord mathdefault" style="margin-right:0.02778em;">r</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.31166399999999994em;"><span style="top:-2.5500000000000003em;margin-left:-0.02778em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathdefault mtight">i</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span></span>,使所有<span class="katex"><span class="katex-mathml"><math><semantics><mrow><msub><mi>r</mi><mi>i</mi></msub></mrow><annotation encoding="application/x-tex">r_i</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.58056em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord mathdefault" style="margin-right:0.02778em;">r</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.31166399999999994em;"><span style="top:-2.5500000000000003em;margin-left:-0.02778em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathdefault mtight">i</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span></span>的和为1</p>
+</li>
+<li>
+<p>计算每个邻域需要生产的正例样本的数量：<span class="katex"><span class="katex-mathml"><math><semantics><mrow><msub><mi>G</mi><mi>i</mi></msub><mo>=</mo><mi>G</mi><mo>∗</mo><msub><mi>r</mi><mi>i</mi></msub></mrow><annotation encoding="application/x-tex">G_i=G*r_i</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.83333em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord mathdefault">G</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.31166399999999994em;"><span style="top:-2.5500000000000003em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathdefault mtight">i</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:0.68333em;vertical-align:0em;"></span><span class="mord mathdefault">G</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">∗</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.58056em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord mathdefault" style="margin-right:0.02778em;">r</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.31166399999999994em;"><span style="top:-2.5500000000000003em;margin-left:-0.02778em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathdefault mtight">i</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span></span></p>
+</li>
+<li>
+<p>在每个邻域生成对应数量的样本。</p>
+<p class='katex-block'><span class="katex-display"><span class="katex"><span class="katex-mathml"><math><semantics><mrow><msub><mi>s</mi><mi>i</mi></msub><mo>=</mo><msub><mi>x</mi><mi>i</mi></msub><mo>+</mo><mi mathvariant="normal">（</mi><msub><mi>x</mi><mrow><mi>z</mi><mi>i</mi></mrow></msub><mo>−</mo><msub><mi>x</mi><mi>i</mi></msub><mo>)</mo><mi>λ</mi></mrow><annotation encoding="application/x-tex">s_i= x_i+（x_{zi}-x_i)\lambda
+</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.58056em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord mathdefault">s</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.31166399999999994em;"><span style="top:-2.5500000000000003em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathdefault mtight">i</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:0.73333em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord mathdefault">x</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.31166399999999994em;"><span style="top:-2.5500000000000003em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathdefault mtight">i</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.73333em;vertical-align:-0.15em;"></span><span class="mord cjk_fallback">（</span><span class="mord"><span class="mord mathdefault">x</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.31166399999999994em;"><span style="top:-2.5500000000000003em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathdefault mtight" style="margin-right:0.04398em;">z</span><span class="mord mathdefault mtight">i</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">−</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord"><span class="mord mathdefault">x</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.31166399999999994em;"><span style="top:-2.5500000000000003em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathdefault mtight">i</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mclose">)</span><span class="mord mathdefault">λ</span></span></span></span></span></p>
+<p>其中，<span class="katex"><span class="katex-mathml"><math><semantics><mrow><msub><mi>x</mi><mi>i</mi></msub></mrow><annotation encoding="application/x-tex">x_i</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.58056em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord mathdefault">x</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.31166399999999994em;"><span style="top:-2.5500000000000003em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathdefault mtight">i</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span></span>和<span class="katex"><span class="katex-mathml"><math><semantics><mrow><msub><mi>x</mi><mrow><mi>z</mi><mi>i</mi></mrow></msub></mrow><annotation encoding="application/x-tex">x_{zi}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.58056em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord mathdefault">x</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.31166399999999994em;"><span style="top:-2.5500000000000003em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathdefault mtight" style="margin-right:0.04398em;">z</span><span class="mord mathdefault mtight">i</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span></span>为邻域内的两个点。<span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>λ</mi></mrow><annotation encoding="application/x-tex">\lambda</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.69444em;vertical-align:0em;"></span><span class="mord mathdefault">λ</span></span></span></span>为0~1的随机数。</p>
+</li>
+<li>
+<p>直到满足采样数量</p>
+</li>
+</ul>
+<h5 id="代码-5">代码</h5>
+<pre><code class="language-python">from imblearn.over_sampling import ADASYN 
+ada = ADASYN(random_state=42)
+x_res, y_res = ada.fit_resample(x, y)
+</code></pre>
+<h4 id="226-borderlinesmote">2.2.6 BorderlineSMOTE</h4>
+<h5 id="介绍-6">介绍</h5>
+<p>smote算法的改进，核心思想是采样边界线上的样本，大致步骤如下：</p>
+<ul>
+<li>在KNN之前，先根据每一个少数样本点周围样本的分布情况进行了筛选。
+<ul>
+<li>如果周围全部都是负类，认为样本是噪声，不处理。</li>
+<li>如果负类超过半数，认为样本是边界样本，加入danger集合中。</li>
+</ul>
+</li>
+<li>对danger中的少数类样本(正类)，进行过采样。</li>
+<li>采样方法与smote相同</li>
+</ul>
+<p>备注：也有改进算法，同时对边界线的多数样本进行采样。</p>
+<h5 id="代码-6">代码</h5>
+<pre><code class="language-python">from imblearn.over_sampling import BorderlineSMOTE 
+sm = BorderlineSMOTE(random_state=42)
+x_res, y_res = sm.fit_resample(x, y)
+</code></pre>
+<h4 id="227-kmeanssmote">2.2.7 KMeansSMOTE</h4>
+<h5 id="介绍-7">介绍</h5>
+<ul>
+<li>使用Kmeans对整个数据集进行聚类</li>
+<li>将更多的合成样本分配给少数类分布稀疏的簇</li>
+<li>对每个少数类的簇进行smote采样</li>
+</ul>
+<h5 id="代码-7">代码</h5>
+<pre><code class="language-python">from imblearn.over_sampling import KMeansSMOTE
+sm = KMeansSMOTE(random_state=42)
+x_res, y_res = sm.fit_resample(x, y)
+</code></pre>
+<h4 id="228-svmsmote">2.2.8 SVMSMOTE</h4>
+<h5 id="介绍-8">介绍</h5>
+<p>与borderline smote类似，区别是使用SVM替换了KNN，从而borderline是不同的。</p>
+<p>在边界区域的正类样本与其周围n个正类样本进行smote采样。</p>
+<h5 id="代码-8">代码</h5>
+<pre><code class="language-python">from imblearn.over_sampling import SVMSMOTE sm = SVMSMOTE(random_state=42)x_res, y_res = sm.fit_resample(x, y)
+</code></pre>
+<h2 id="3-效果总结">3 效果总结</h2>
+<p>基于实际的风控业务进行了测试，基本在训练集都达到了过拟合的效果。但是在实际的测试集上效果与不进行采样相差不大。甚至采样比例过大的话，反而导致效果下降。</p>
+<p>因此还需要基于实际业务进行测试后采样。</p>
+]]></content>
+    </entry>
     <entry>
         <title type="html"><![CDATA[概率校准笔记]]></title>
         <id>https://MaXXXXfeng.github.io/post/calibration-curve/</id>
@@ -685,7 +870,7 @@ c-8,0,-12,-0.7,-12,-2z M1001 80H400000v40H1014z'/></svg></span></span></span><sp
 <p>基于之前接触的一些flask的开发，这里做一个简单的结构模板。</p>
 <h3 id="目录结构">目录结构</h3>
 <pre><code>Project name/  # 项目名
-├── deploy # docker/k8s 等配置配置文件
+├── deploy # docker/k8s 等配置文件
 ├── data # 数据存放
 ├── Project name  # 应用名
 │   ├── __init__.py  # 初始化程序,用来注册蓝图
