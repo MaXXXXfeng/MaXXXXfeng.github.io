@@ -353,6 +353,7 @@ td {
 .site-header {
   padding: 48px 0;
   text-align: center;
+  width: 100%;
 }
 .site-header .site-title {
   font-size: 32px;
@@ -362,7 +363,6 @@ td {
   font-size: 16px;
   padding: 24px;
   color: #495057;
-  font-weight: lighter;
 }
 .site-header .menu-container {
   display: flex;
@@ -386,7 +386,7 @@ td {
   font-size: 18px;
 }
 .site-header .social-container a {
-  margin: 4px 8px;
+  margin: 4 8px;
   color: #868e96;
 }
 @media (max-width: 600px) {
@@ -472,7 +472,7 @@ td {
   text-indent: 0;
 }
 .pagination-container {
-  padding: 32px 16px;
+  padding: 24px 32px 32px;
   overflow: hidden;
 }
 .pagination-container .prev-page {
@@ -480,16 +480,6 @@ td {
 }
 .pagination-container .next-page {
   float: right;
-}
-.pagination-container .prev-page,
-.pagination-container .next-page {
-  padding: 6px 12px;
-  font-weight: bold;
-  border-bottom: 2px solid transparent;
-}
-.pagination-container .prev-page:hover,
-.pagination-container .next-page:hover {
-  border-bottom: 2px solid;
 }
 @media (max-width: 600px) {
   .post-container .post {
@@ -580,19 +570,21 @@ td {
   line-height: initial;
   word-wrap: break-word;
   border-radius: 0;
-  background-color: #fff5f5;
-  color: #c53030;
+  background-color: #f1f1f1;
+  color: rgba(0, 0, 0, 0.8);
   padding: 0.2em 0.33333333em;
+  font-size: 0.875rem;
   margin-left: 0.125em;
   margin-right: 0.125em;
 }
 .post-detail .post .post-content pre {
   margin-bottom: 1.5rem;
+  font-size: 0.75rem;
   padding: 0;
   position: relative;
 }
 .post-detail .post .post-content pre code {
-  font-size: 0.96em;
+  font-size: 0.86rem;
   font-family: 'Source Code Pro', Consolas, Menlo, Monaco, 'Courier New', monospace;
   padding: 1em;
   border-radius: 5px;
@@ -676,11 +668,6 @@ td {
   content: "* * *";
   text-align: center;
 }
-.post-detail .post .post-content mark {
-  background: #faf089;
-  color: #744210;
-  padding: 0.2em;
-}
 .post-detail .post .post-content .footnotes {
   margin-left: auto;
   margin-right: auto;
@@ -709,7 +696,7 @@ td {
   width: 16px;
   height: 16px;
   margin: 4px 0 0;
-  top: -1px;
+  top: 3px;
   left: -22px;
   transform-origin: center;
   transform: rotate(-90deg);
@@ -735,7 +722,7 @@ td {
   height: 16px;
   box-sizing: border-box;
   display: inline-block;
-  border: 1px solid #9ae6b4;
+  border: 1px solid #d0d0d0;
   border-radius: 2px;
   background-color: #fff;
   position: absolute;
@@ -764,7 +751,6 @@ td {
 .next-post .next {
   margin-bottom: 24px;
   color: #343a40;
-  font-weight: lighter;
 }
 .next-post .post-title {
   font-size: 20px;
@@ -780,9 +766,6 @@ td {
   top: 32px;
   width: 200px;
   font-size: 12px;
-  list-style: none;
-  padding-left: 0;
-  padding: 16px 8px;
 }
 .toc-container .markdownIt-TOC:before {
   content: "";
@@ -886,16 +869,8 @@ td {
 .site-footer {
   font-size: 12px;
   text-align: center;
-  padding: 40px 24px;
+  padding: 24px;
   color: #868e96;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-.rss {
-  display: inline-flex;
-  align-items: center;
-  margin-left: 24px;
 }
 .hljs {
   display: block;
@@ -974,3 +949,31 @@ td {
 .hljs-strong {
   font-weight: bold;
 }
+
+      .post-container .post .post-title {
+        text-align: center;
+      }
+      .post-container .post .post-info {
+        text-align: center;
+      }
+      .post-detail .post .post-title {
+        text-align: center;
+      }
+      .post-detail .post .post-info {
+        text-align: center;
+      }
+    
+      body {
+        font-family: -apple-system,BlinkMacSystemFont,'Helvetica Neue','PingFang SC','Hiragino Sans GB','Droid Sans Fallback','Microsoft YaHei',sans-serif;
+      }
+    
+      body {
+        color: #212529;
+      }
+    
+    .site-header {
+        background-image: url(../media/images/custom-headerBgImg.jpg);
+        background-size: cover;
+        background-position: center;
+      }
+    

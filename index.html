@@ -3,22 +3,22 @@
     <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Max Blog</title>
-<link rel="shortcut icon" href="https://MaXXXXfeng.github.io/favicon.ico?v=1621763320822">
-<link href="https://cdn.jsdelivr.net/npm/remixicon@2.3.0/fonts/remixicon.css" rel="stylesheet">
+<meta name="description" content="醉里挑灯看剑" />
+<link rel="shortcut icon" href="https://MaXXXXfeng.github.io/favicon.ico?v=1621771566405">
+<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css" integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.0/katex.min.css">
 <link rel="stylesheet" href="https://MaXXXXfeng.github.io/styles/main.css">
-<link rel="alternate" type="application/atom+xml" title="Max Blog - Atom Feed" href="https://MaXXXXfeng.github.io/atom.xml">
+
+<script src="https://cdn.bootcss.com/highlight.js/9.12.0/highlight.min.js"></script>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Droid+Serif:400,700">
 
 
 
-    <meta name="description" content="醉里挑灯看剑" />
   </head>
   <body>
-    <div class="main">
-      <div class="main-content">
-        <div class="site-header">
+    <header class="site-header">
   <a href="https://MaXXXXfeng.github.io">
-  <img class="avatar" src="https://MaXXXXfeng.github.io/images/avatar.png?v=1621763320822" alt="">
+  <img class="avatar" src="https://MaXXXXfeng.github.io/images/avatar.png?v=1621771566405" alt="">
   </a>
   <h1 class="site-title">
     Max Blog
@@ -66,8 +66,10 @@
       
     
   </div>
-</div>
+</header>
 
+    <div class="main">
+      <div class="main-content">
     
         <div class="post-container">
   
@@ -95,7 +97,7 @@
       <div class="post-abstract">
         <p>基于imbalance learn的采样方法研究，主要为过采样</p>
 
-      </div>
+      </di>
     </article>
   
     <article class="post">
@@ -122,7 +124,7 @@
       <div class="post-abstract">
         <p>概率校准的介绍和常见的方法</p>
 
-      </div>
+      </di>
     </article>
   
     <article class="post">
@@ -152,7 +154,7 @@ src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLor
 </script>
 <p>风控模型中常见的评估指标总结。</p>
 
-      </div>
+      </di>
     </article>
   
     <article class="post">
@@ -179,7 +181,7 @@ src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLor
       <div class="post-abstract">
         <p>对于常见的词向量的总结</p>
 
-      </div>
+      </di>
     </article>
   
     <article class="post">
@@ -210,7 +212,7 @@ src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLor
       <div class="post-abstract">
         <p>简单易上手的flask任务模板</p>
 
-      </div>
+      </di>
     </article>
   
     <article class="post">
@@ -237,7 +239,7 @@ src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLor
       <div class="post-abstract">
         <p>vs code 他不香吗？  sublime已弃坑....</p>
 
-      </div>
+      </di>
     </article>
   
 </div>
@@ -250,11 +252,51 @@ src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLor
 
     
         <div class="site-footer">
-  Powered by <a href="https://github.com/getgridea/gridea" target="_blank">Gridea</a>
-  <a class="rss" href="https://MaXXXXfeng.github.io/atom.xml" target="_blank">
-    <i class="ri-rss-line"></i> RSS
-  </a>
+  Powered by <a href="https://github.com/getgridea/gridea" target="_blank">Gridea</a> | 
+  <a class="rss" href="https://MaXXXXfeng.github.io/atom.xml" target="_blank">RSS</a>
 </div>
+
+<script>
+  hljs.initHighlightingOnLoad()
+
+  let mainNavLinks = document.querySelectorAll(".markdownIt-TOC a");
+
+  // This should probably be throttled.
+  // Especially because it triggers during smooth scrolling.
+  // https://lodash.com/docs/4.17.10#throttle
+  // You could do like...
+  // window.addEventListener("scroll", () => {
+  //    _.throttle(doThatStuff, 100);
+  // });
+  // Only not doing it here to keep this Pen dependency-free.
+
+  window.addEventListener("scroll", event => {
+    let fromTop = window.scrollY;
+
+    mainNavLinks.forEach((link, index) => {
+      let section = document.getElementById(decodeURI(link.hash).substring(1));
+      let nextSection = null
+      if (mainNavLinks[index + 1]) {
+        nextSection = document.getElementById(decodeURI(mainNavLinks[index + 1].hash).substring(1));
+      }
+      console.log('section.offsetHeight', section.offsetHeight);
+      if (section.offsetTop <= fromTop) {
+        if (nextSection) {
+          if (nextSection.offsetTop > fromTop) {
+            link.classList.add("current");
+          } else {
+            link.classList.remove("current");    
+          }
+        } else {
+          link.classList.add("current");
+        }
+      } else {
+        link.classList.remove("current");
+      }
+    });
+  });
+
+</script>
 
       </div>
     </div>
