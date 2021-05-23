@@ -1,259 +1,262 @@
-<!DOCTYPE html>
 <html>
   <head>
-    <meta charset="utf-8" >
-
+    <meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Max Blog</title>
-<meta name="description" content="醉里挑灯看剑">
-
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-
-<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css" integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous">
-<link rel="shortcut icon" href="https://MaXXXXfeng.github.io/favicon.ico?v=1621433164451">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.0/katex.min.css">
+<link rel="shortcut icon" href="https://MaXXXXfeng.github.io/favicon.ico?v=1621763320822">
+<link href="https://cdn.jsdelivr.net/npm/remixicon@2.3.0/fonts/remixicon.css" rel="stylesheet">
 <link rel="stylesheet" href="https://MaXXXXfeng.github.io/styles/main.css">
+<link rel="alternate" type="application/atom+xml" title="Max Blog - Atom Feed" href="https://MaXXXXfeng.github.io/atom.xml">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Droid+Serif:400,700">
 
 
 
-<script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
-<script src="https://cdn.bootcss.com/highlight.js/9.12.0/highlight.min.js"></script>
-
-<link rel="stylesheet" href="https://unpkg.com/aos@next/dist/aos.css" />
-
-
-
+    <meta name="description" content="醉里挑灯看剑" />
   </head>
   <body>
-    <div id="app" class="main">
-
-      <div class="sidebar" :class="{ 'full-height': menuVisible }">
-  <div class="top-container" data-aos="fade-right">
-    <div class="top-header-container">
-      <a class="site-title-container" href="https://MaXXXXfeng.github.io">
-        <img src="https://MaXXXXfeng.github.io/images/avatar.png?v=1621433164451" class="site-logo">
-        <h1 class="site-title">Max Blog</h1>
-      </a>
-      <div class="menu-btn" @click="menuVisible = !menuVisible">
-        <div class="line"></div>
-      </div>
-    </div>
-    <div>
+    <div class="main">
+      <div class="main-content">
+        <div class="site-header">
+  <a href="https://MaXXXXfeng.github.io">
+  <img class="avatar" src="https://MaXXXXfeng.github.io/images/avatar.png?v=1621763320822" alt="">
+  </a>
+  <h1 class="site-title">
+    Max Blog
+  </h1>
+  <p class="site-description">
+    醉里挑灯看剑
+  </p>
+  <div class="menu-container">
+    
       
-        
-          <a href="/" class="site-nav">
-            首页
-          </a>
-        
+        <a href="/" class="menu">
+          首页
+        </a>
       
-        
-          <a href="/archives" class="site-nav">
-            归档
-          </a>
-        
+    
       
-        
-          <a href="/tags" class="site-nav">
-            标签
-          </a>
-        
+        <a href="/archives" class="menu">
+          归档
+        </a>
       
-        
-          <a href="/post/about" class="site-nav">
-            关于
-          </a>
-        
+    
       
-    </div>
+        <a href="/tags" class="menu">
+          标签
+        </a>
+      
+    
+      
+        <a href="/post/about" class="menu">
+          关于
+        </a>
+      
+    
   </div>
-  <div class="bottom-container" data-aos="flip-up" data-aos-offset="0">
-    <div class="social-container">
+  <div class="social-container">
+    
       
-        
-          <a class="social-link" href="https://github.com/MaXXXXfeng/" target="_blank">
-            <i class="fab fa-github"></i>
-          </a>
-        
+    
       
-        
+    
       
-        
+    
       
-        
+    
       
-        
-      
-    </div>
-    <div class="site-description">
-      醉里挑灯看剑
-    </div>
-    <div class="site-footer">
-      Powered by <a href="https://github.com/getgridea/gridea" target="_blank">Gridea</a> | <a class="rss" href="https://MaXXXXfeng.github.io/atom.xml" target="_blank">RSS</a>
-    </div>
+    
   </div>
 </div>
 
+    
+        <div class="post-container">
+  
+    <article class="post">
+      <a href="https://MaXXXXfeng.github.io/post/risk-sampling/">
+        <h2 class="post-title">采样方法笔记</h2>
+      </a>
+      <div class="post-info">
+        <span>
+          2021-05-19
+        </span>
+        <span>
+          7 min read
+        </span>
+        
+          <a href="https://MaXXXXfeng.github.io/tag/risk/" class="post-tag">
+            # 风控
+          </a>
+        
+      </div>
+      
+        <a href="https://MaXXXXfeng.github.io/post/risk-sampling/" class="post-feature-image" style="background-image: url('https://MaXXXXfeng.github.io/post-images/risk-sampling.jpg')">
+        </a>
+      
+      <div class="post-abstract">
+        <p>基于imbalance learn的采样方法研究，主要为过采样</p>
 
-      <div class="main-container">
-        <div class="content-container" data-aos="fade-up">
-          
-            <article class="post-item">
-              <div class="left">
-                <a href="https://MaXXXXfeng.github.io/post/risk-sampling/">
-                  <h2 class="post-title">采样方法笔记</h2>
-                </a>
-                <div class="post-date">
-                  2021-05-19
-                </div>
-                <div class="post-abstract">
-                  <p>基于imbalance learn的采样方法研究，主要为过采样</p>
+      </div>
+    </article>
+  
+    <article class="post">
+      <a href="https://MaXXXXfeng.github.io/post/calibration-curve/">
+        <h2 class="post-title">概率校准笔记</h2>
+      </a>
+      <div class="post-info">
+        <span>
+          2021-05-18
+        </span>
+        <span>
+          6 min read
+        </span>
+        
+          <a href="https://MaXXXXfeng.github.io/tag/risk/" class="post-tag">
+            # 风控
+          </a>
+        
+      </div>
+      
+        <a href="https://MaXXXXfeng.github.io/post/calibration-curve/" class="post-feature-image" style="background-image: url('https://MaXXXXfeng.github.io/post-images/calibration-curve.jpg')">
+        </a>
+      
+      <div class="post-abstract">
+        <p>概率校准的介绍和常见的方法</p>
 
-                </div>
-              </div>
-              
-                <a class="right" href="https://MaXXXXfeng.github.io/post/risk-sampling/">
-                  <div class="feature-container" style="background-image: url('https://MaXXXXfeng.github.io/post-images/risk-sampling.jpg')">
-                  </div>
-                </a>
-              
-            </article>
-          
-            <article class="post-item">
-              <div class="left">
-                <a href="https://MaXXXXfeng.github.io/post/calibration-curve/">
-                  <h2 class="post-title">概率校准笔记</h2>
-                </a>
-                <div class="post-date">
-                  2021-05-18
-                </div>
-                <div class="post-abstract">
-                  <p>概率校准的介绍和常见的方法</p>
-
-                </div>
-              </div>
-              
-                <a class="right" href="https://MaXXXXfeng.github.io/post/calibration-curve/">
-                  <div class="feature-container" style="background-image: url('https://MaXXXXfeng.github.io/post-images/calibration-curve.jpg')">
-                  </div>
-                </a>
-              
-            </article>
-          
-            <article class="post-item">
-              <div class="left">
-                <a href="https://MaXXXXfeng.github.io/post/risk-evaluation/">
-                  <h2 class="post-title">风控模型评估指标总结</h2>
-                </a>
-                <div class="post-date">
-                  2021-05-17
-                </div>
-                <div class="post-abstract">
-                  <script type="text/javascript"
+      </div>
+    </article>
+  
+    <article class="post">
+      <a href="https://MaXXXXfeng.github.io/post/risk-evaluation/">
+        <h2 class="post-title">风控模型评估指标总结</h2>
+      </a>
+      <div class="post-info">
+        <span>
+          2021-05-17
+        </span>
+        <span>
+          10 min read
+        </span>
+        
+          <a href="https://MaXXXXfeng.github.io/tag/risk/" class="post-tag">
+            # 风控
+          </a>
+        
+      </div>
+      
+        <a href="https://MaXXXXfeng.github.io/post/risk-evaluation/" class="post-feature-image" style="background-image: url('https://raw.githubusercontent.com/MaXXXXfeng/typora-res/main/data/20210518000118.jpg')">
+        </a>
+      
+      <div class="post-abstract">
+        <script type="text/javascript"
 src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
 </script>
 <p>风控模型中常见的评估指标总结。</p>
 
-                </div>
-              </div>
-              
-                <a class="right" href="https://MaXXXXfeng.github.io/post/risk-evaluation/">
-                  <div class="feature-container" style="background-image: url('https://raw.githubusercontent.com/MaXXXXfeng/typora-res/main/data/20210518000118.jpg')">
-                  </div>
-                </a>
-              
-            </article>
-          
-            <article class="post-item">
-              <div class="left">
-                <a href="https://MaXXXXfeng.github.io/post/word-embedding/">
-                  <h2 class="post-title">词向量总结</h2>
-                </a>
-                <div class="post-date">
-                  2021-05-16
-                </div>
-                <div class="post-abstract">
-                  <p>对于常见的词向量的总结</p>
+      </div>
+    </article>
+  
+    <article class="post">
+      <a href="https://MaXXXXfeng.github.io/post/word-embedding/">
+        <h2 class="post-title">词向量总结</h2>
+      </a>
+      <div class="post-info">
+        <span>
+          2021-05-16
+        </span>
+        <span>
+          14 min read
+        </span>
+        
+          <a href="https://MaXXXXfeng.github.io/tag/nlp/" class="post-tag">
+            # 自然语言处理
+          </a>
+        
+      </div>
+      
+        <a href="https://MaXXXXfeng.github.io/post/word-embedding/" class="post-feature-image" style="background-image: url('https://raw.githubusercontent.com/MaXXXXfeng/typora-res/main/data/20210516224833.jpg')">
+        </a>
+      
+      <div class="post-abstract">
+        <p>对于常见的词向量的总结</p>
 
-                </div>
-              </div>
-              
-                <a class="right" href="https://MaXXXXfeng.github.io/post/word-embedding/">
-                  <div class="feature-container" style="background-image: url('https://raw.githubusercontent.com/MaXXXXfeng/typora-res/main/data/20210516224833.jpg')">
-                  </div>
-                </a>
-              
-            </article>
-          
-            <article class="post-item">
-              <div class="left">
-                <a href="https://MaXXXXfeng.github.io/post/flask-project-tree/">
-                  <h2 class="post-title">Flask基本项目结构</h2>
-                </a>
-                <div class="post-date">
-                  2021-05-14
-                </div>
-                <div class="post-abstract">
-                  <p>简单易上手的flask任务模板</p>
+      </div>
+    </article>
+  
+    <article class="post">
+      <a href="https://MaXXXXfeng.github.io/post/flask-project-tree/">
+        <h2 class="post-title">Flask基本项目结构</h2>
+      </a>
+      <div class="post-info">
+        <span>
+          2021-05-14
+        </span>
+        <span>
+          2 min read
+        </span>
+        
+          <a href="https://MaXXXXfeng.github.io/tag/development/" class="post-tag">
+            # 开发
+          </a>
+        
+          <a href="https://MaXXXXfeng.github.io/tag/python/" class="post-tag">
+            # python
+          </a>
+        
+      </div>
+      
+        <a href="https://MaXXXXfeng.github.io/post/flask-project-tree/" class="post-feature-image" style="background-image: url('https://MaXXXXfeng.github.io/post-images/flask-project-tree.png')">
+        </a>
+      
+      <div class="post-abstract">
+        <p>简单易上手的flask任务模板</p>
 
-                </div>
-              </div>
-              
-                <a class="right" href="https://MaXXXXfeng.github.io/post/flask-project-tree/">
-                  <div class="feature-container" style="background-image: url('https://MaXXXXfeng.github.io/post-images/flask-project-tree.png')">
-                  </div>
-                </a>
-              
-            </article>
-          
-            <article class="post-item">
-              <div class="left">
-                <a href="https://MaXXXXfeng.github.io/post/sublime-repl/">
-                  <h2 class="post-title">Sublime插件sublimeREPL快捷键无响应问题</h2>
-                </a>
-                <div class="post-date">
-                  2021-05-11
-                </div>
-                <div class="post-abstract">
-                  <p>vs code 他不香吗？  sublime已弃坑....</p>
+      </div>
+    </article>
+  
+    <article class="post">
+      <a href="https://MaXXXXfeng.github.io/post/sublime-repl/">
+        <h2 class="post-title">Sublime插件sublimeREPL快捷键无响应问题</h2>
+      </a>
+      <div class="post-info">
+        <span>
+          2021-05-11
+        </span>
+        <span>
+          2 min read
+        </span>
+        
+          <a href="https://MaXXXXfeng.github.io/tag/bugs/" class="post-tag">
+            # 疑难杂症
+          </a>
+        
+      </div>
+      
+        <a href="https://MaXXXXfeng.github.io/post/sublime-repl/" class="post-feature-image" style="background-image: url('https://MaXXXXfeng.github.io/post-images/sublime-repl.jpeg')">
+        </a>
+      
+      <div class="post-abstract">
+        <p>vs code 他不香吗？  sublime已弃坑....</p>
 
-                </div>
-              </div>
-              
-                <a class="right" href="https://MaXXXXfeng.github.io/post/sublime-repl/">
-                  <div class="feature-container" style="background-image: url('https://MaXXXXfeng.github.io/post-images/sublime-repl.jpeg')">
-                  </div>
-                </a>
-              
-            </article>
-          
+      </div>
+    </article>
+  
+</div>
 
-          <div class="pagination-container">
+    
+        <div class="pagination-container">
   
   
 </div>
 
-        </div>
+    
+        <div class="site-footer">
+  Powered by <a href="https://github.com/getgridea/gridea" target="_blank">Gridea</a>
+  <a class="rss" href="https://MaXXXXfeng.github.io/atom.xml" target="_blank">
+    <i class="ri-rss-line"></i> RSS
+  </a>
+</div>
+
       </div>
     </div>
-
-    <script src="https://unpkg.com/aos@next/dist/aos.js"></script>
-
-<script type="application/javascript">
-
-AOS.init();
-
-hljs.initHighlightingOnLoad()
-
-var app = new Vue({
-  el: '#app',
-  data: {
-    menuVisible: false,
-  },
-})
-
-</script>
-
-
-
-
   </body>
 </html>
