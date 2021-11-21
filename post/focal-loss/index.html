@@ -1,0 +1,425 @@
+<html>
+  <head>
+    <meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Focal-loss论文解读 | Max Blog</title>
+<meta name="description" content="醉里挑灯看剑" />
+<link rel="shortcut icon" href="https://MaXXXXfeng.github.io/favicon.ico?v=1637506063666">
+<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css" integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.0/katex.min.css">
+<link rel="stylesheet" href="https://MaXXXXfeng.github.io/styles/main.css">
+
+<script src="https://cdn.bootcss.com/highlight.js/9.12.0/highlight.min.js"></script>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Droid+Serif:400,700">
+
+
+
+  </head>
+  <body>
+    <header class="site-header">
+  <a href="https://MaXXXXfeng.github.io">
+  <img class="avatar" src="https://MaXXXXfeng.github.io/images/avatar.png?v=1637506063666" alt="">
+  </a>
+  <h1 class="site-title">
+    Max Blog
+  </h1>
+  <p class="site-description">
+    醉里挑灯看剑
+  </p>
+  <div class="menu-container">
+    
+      
+        <a href="/" class="menu">
+          首页
+        </a>
+      
+    
+      
+        <a href="/archives" class="menu">
+          归档
+        </a>
+      
+    
+      
+        <a href="/tags" class="menu">
+          标签
+        </a>
+      
+    
+      
+        <a href="/post/about" class="menu">
+          关于
+        </a>
+      
+    
+  </div>
+  <div class="social-container">
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+  </div>
+</header>
+
+    <div class="main">
+      <div class="main-content">
+        <div class="post-detail">
+          <article class="post">
+            <h2 class="post-title">
+              Focal-loss论文解读
+            </h2>
+            <div class="post-info">
+              <span>
+                2021-11-21
+              </span>
+              <span>
+                9 min read
+              </span>
+              
+                <a href="https://MaXXXXfeng.github.io/tag/deeplearning/" class="post-tag">
+                  # 深度学习
+                </a>
+              
+                <a href="https://MaXXXXfeng.github.io/tag/risk/" class="post-tag">
+                  # 风控
+                </a>
+              
+            </div>
+            
+              <img class="post-feature-image" src="https://MaXXXXfeng.github.io/post-images/focal-loss.jpg" alt="">
+            
+            <div class="post-content-wrapper">
+              <div class="post-content">
+                <p>针对正负不均衡样本的损失函数</p>
+<!-- more -->
+<p>论文链接：<a href="https://arxiv.org/pdf/1708.02002.pdf">Focal Loss for Dense Object Detection</a></p>
+<h2 id="1-论文目标">1 论文目标</h2>
+<p>当前目标检测算法，主要分成两类</p>
+<p>one-stage</p>
+<ul>
+<li>end2end，一步到位</li>
+<li>速度快</li>
+<li>准确度较低</li>
+<li>YOLO</li>
+</ul>
+<p>two-stage</p>
+<ul>
+<li>先检测，再识别</li>
+<li>速度慢</li>
+<li>精度较高</li>
+<li>Faster RCNN</li>
+</ul>
+<p><strong>目标：</strong></p>
+<p>通过focal loss ,使得one-stage的精度达到two-stage，同时不影响速度。</p>
+<h2 id="2-当前问题">2 当前问题</h2>
+<p>one-stage准确率不如two-stage的原因是：样本的类别不均衡。</p>
+<p>会导致的后果：</p>
+<blockquote>
+<p>(1)training is inefficient as most locations are easy nega- tives that contribute no useful learning signal;</p>
+<p>(2)en masse, the easy negatives can overwhelm training and lead to de- generate models. A</p>
+</blockquote>
+<ul>
+<li>大量样本是容易分类的负样本，没有有用的贡献</li>
+<li>容易分类的负样本会导致模型退化</li>
+</ul>
+<p>训练数据中存在大量的容易分类的负样本，导致模型的优化效果有问题。</p>
+<p>改进思路：</p>
+<p><strong>通过减少易分类样本的权重，从而使得模型在训练时更专注于难分类的样本。</strong></p>
+<h2 id="3-细节介绍">3 细节介绍</h2>
+<p>交叉熵：</p>
+<p class='katex-block'><span class="katex-display"><span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi mathvariant="normal">CE</mi><mo>⁡</mo><mo>(</mo><mi>p</mi><mo separator="true">,</mo><mi>y</mi><mo>)</mo><mo>=</mo><mrow><mo fence="true">{</mo><mtable><mtr><mtd><mstyle scriptlevel="0" displaystyle="false"><mrow><mo>−</mo><mi>log</mi><mo>⁡</mo><mo>(</mo><mi>p</mi><mo>)</mo></mrow></mstyle></mtd><mtd><mstyle scriptlevel="0" displaystyle="false"><mrow><mtext> if </mtext><mi>y</mi><mo>=</mo><mn>1</mn></mrow></mstyle></mtd></mtr><mtr><mtd><mstyle scriptlevel="0" displaystyle="false"><mrow><mo>−</mo><mi>log</mi><mo>⁡</mo><mo>(</mo><mn>1</mn><mo>−</mo><mi>p</mi><mo>)</mo></mrow></mstyle></mtd><mtd><mstyle scriptlevel="0" displaystyle="false"><mtext> otherwise </mtext></mstyle></mtd></mtr></mtable></mrow></mrow><annotation encoding="application/x-tex">\operatorname{CE}(p, y)= \begin{cases}-\log (p) &amp; \text { if } y=1 \\ -\log (1-p) &amp; \text { otherwise }\end{cases}
+</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mop"><span class="mord mathrm">C</span><span class="mord mathrm">E</span></span><span class="mopen">(</span><span class="mord mathdefault">p</span><span class="mpunct">,</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord mathdefault" style="margin-right:0.03588em;">y</span><span class="mclose">)</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:3.0000299999999998em;vertical-align:-1.25003em;"></span><span class="minner"><span class="mopen delimcenter" style="top:0em;"><span class="delimsizing size4">{</span></span><span class="mord"><span class="mtable"><span class="col-align-l"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:1.69em;"><span style="top:-3.69em;"><span class="pstrut" style="height:3.008em;"></span><span class="mord"><span class="mord">−</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mop">lo<span style="margin-right:0.01389em;">g</span></span><span class="mopen">(</span><span class="mord mathdefault">p</span><span class="mclose">)</span></span></span><span style="top:-2.25em;"><span class="pstrut" style="height:3.008em;"></span><span class="mord"><span class="mord">−</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mop">lo<span style="margin-right:0.01389em;">g</span></span><span class="mopen">(</span><span class="mord">1</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">−</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mord mathdefault">p</span><span class="mclose">)</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:1.19em;"><span></span></span></span></span></span><span class="arraycolsep" style="width:1em;"></span><span class="col-align-l"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:1.69em;"><span style="top:-3.69em;"><span class="pstrut" style="height:3.008em;"></span><span class="mord"><span class="mord text"><span class="mord"> if </span></span><span class="mord mathdefault" style="margin-right:0.03588em;">y</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mord">1</span></span></span><span style="top:-2.25em;"><span class="pstrut" style="height:3.008em;"></span><span class="mord"><span class="mord text"><span class="mord"> otherwise </span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:1.19em;"><span></span></span></span></span></span></span></span><span class="mclose nulldelimiter"></span></span></span></span></span></span></p>
+<p class='katex-block'><span class="katex-display"><span class="katex"><span class="katex-mathml"><math><semantics><mrow><msub><mi>p</mi><mi mathvariant="normal">t</mi></msub><mo>=</mo><mrow><mo fence="true">{</mo><mtable><mtr><mtd><mstyle scriptlevel="0" displaystyle="false"><mi>p</mi></mstyle></mtd><mtd><mstyle scriptlevel="0" displaystyle="false"><mrow><mtext> if </mtext><mi>y</mi><mo>=</mo><mn>1</mn></mrow></mstyle></mtd></mtr><mtr><mtd><mstyle scriptlevel="0" displaystyle="false"><mrow><mn>1</mn><mo>−</mo><mi>p</mi></mrow></mstyle></mtd><mtd><mstyle scriptlevel="0" displaystyle="false"><mtext> otherwise </mtext></mstyle></mtd></mtr></mtable></mrow></mrow><annotation encoding="application/x-tex">p_{\mathrm{t}}= \begin{cases}p &amp; \text { if } y=1 \\ 1-p &amp; \text { otherwise }\end{cases}
+</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.625em;vertical-align:-0.19444em;"></span><span class="mord"><span class="mord mathdefault">p</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.2805559999999999em;"><span style="top:-2.5500000000000003em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight"><span class="mord mathrm mtight">t</span></span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:3.0000299999999998em;vertical-align:-1.25003em;"></span><span class="minner"><span class="mopen delimcenter" style="top:0em;"><span class="delimsizing size4">{</span></span><span class="mord"><span class="mtable"><span class="col-align-l"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:1.69em;"><span style="top:-3.69em;"><span class="pstrut" style="height:3.008em;"></span><span class="mord"><span class="mord mathdefault">p</span></span></span><span style="top:-2.25em;"><span class="pstrut" style="height:3.008em;"></span><span class="mord"><span class="mord">1</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">−</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mord mathdefault">p</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:1.19em;"><span></span></span></span></span></span><span class="arraycolsep" style="width:1em;"></span><span class="col-align-l"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:1.69em;"><span style="top:-3.69em;"><span class="pstrut" style="height:3.008em;"></span><span class="mord"><span class="mord text"><span class="mord"> if </span></span><span class="mord mathdefault" style="margin-right:0.03588em;">y</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mord">1</span></span></span><span style="top:-2.25em;"><span class="pstrut" style="height:3.008em;"></span><span class="mord"><span class="mord text"><span class="mord"> otherwise </span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:1.19em;"><span></span></span></span></span></span></span></span><span class="mclose nulldelimiter"></span></span></span></span></span></span></p>
+<p>简化为：</p>
+<p class='katex-block'><span class="katex-display"><span class="katex"><span class="katex-mathml"><math><semantics><mrow><mrow><mi mathvariant="normal">C</mi><mi mathvariant="normal">E</mi></mrow><mrow><mo fence="true">(</mo><msub><mi>p</mi><mi mathvariant="normal">t</mi></msub><mo fence="true">)</mo></mrow><mo>=</mo><mo>−</mo><mi>log</mi><mo>⁡</mo><mrow><mo fence="true">(</mo><msub><mi>p</mi><mi mathvariant="normal">t</mi></msub><mo fence="true">)</mo></mrow></mrow><annotation encoding="application/x-tex">\mathrm{CE}\left(p_{\mathrm{t}}\right)=- \log \left(p_{\mathrm{t}}\right)
+</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord"><span class="mord mathrm">C</span><span class="mord mathrm">E</span></span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="minner"><span class="mopen delimcenter" style="top:0em;">(</span><span class="mord"><span class="mord mathdefault">p</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.2805559999999999em;"><span style="top:-2.5500000000000003em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight"><span class="mord mathrm mtight">t</span></span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mclose delimcenter" style="top:0em;">)</span></span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord">−</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mop">lo<span style="margin-right:0.01389em;">g</span></span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="minner"><span class="mopen delimcenter" style="top:0em;">(</span><span class="mord"><span class="mord mathdefault">p</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.2805559999999999em;"><span style="top:-2.5500000000000003em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight"><span class="mord mathrm mtight">t</span></span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mclose delimcenter" style="top:0em;">)</span></span></span></span></span></span></p>
+<p>focal loss：</p>
+<p class='katex-block'><span class="katex-display"><span class="katex"><span class="katex-mathml"><math><semantics><mrow><mrow><mi mathvariant="normal">F</mi><mi mathvariant="normal">L</mi></mrow><mrow><mo fence="true">(</mo><msub><mi>p</mi><mi mathvariant="normal">t</mi></msub><mo fence="true">)</mo></mrow><mo>=</mo><mo>−</mo><msub><mi>α</mi><mi>t</mi></msub><msup><mrow><mo fence="true">(</mo><mn>1</mn><mo>−</mo><msub><mi>p</mi><mi mathvariant="normal">t</mi></msub><mo fence="true">)</mo></mrow><mi>γ</mi></msup><mi>log</mi><mo>⁡</mo><mrow><mo fence="true">(</mo><msub><mi>p</mi><mi mathvariant="normal">t</mi></msub><mo fence="true">)</mo></mrow></mrow><annotation encoding="application/x-tex">\mathrm{FL}\left(p_{\mathrm{t}}\right)=-\alpha_{t}\left(1-p_{\mathrm{t}}\right)^{\gamma} \log \left(p_{\mathrm{t}}\right)
+</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord"><span class="mord mathrm">F</span><span class="mord mathrm">L</span></span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="minner"><span class="mopen delimcenter" style="top:0em;">(</span><span class="mord"><span class="mord mathdefault">p</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.2805559999999999em;"><span style="top:-2.5500000000000003em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight"><span class="mord mathrm mtight">t</span></span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mclose delimcenter" style="top:0em;">)</span></span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:1.054292em;vertical-align:-0.25em;"></span><span class="mord">−</span><span class="mord"><span class="mord mathdefault" style="margin-right:0.0037em;">α</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.2805559999999999em;"><span style="top:-2.5500000000000003em;margin-left:-0.0037em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathdefault mtight">t</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="minner"><span class="minner"><span class="mopen delimcenter" style="top:0em;">(</span><span class="mord">1</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">−</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mord"><span class="mord mathdefault">p</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.2805559999999999em;"><span style="top:-2.5500000000000003em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight"><span class="mord mathrm mtight">t</span></span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mclose delimcenter" style="top:0em;">)</span></span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.804292em;"><span style="top:-3.2029000000000005em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathdefault mtight" style="margin-right:0.05556em;">γ</span></span></span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mop">lo<span style="margin-right:0.01389em;">g</span></span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="minner"><span class="mopen delimcenter" style="top:0em;">(</span><span class="mord"><span class="mord mathdefault">p</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.2805559999999999em;"><span style="top:-2.5500000000000003em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight"><span class="mord mathrm mtight">t</span></span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mclose delimcenter" style="top:0em;">)</span></span></span></span></span></span></p>
+<ul>
+<li><span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>α</mi></mrow><annotation encoding="application/x-tex">\alpha</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.43056em;vertical-align:0em;"></span><span class="mord mathdefault" style="margin-right:0.0037em;">α</span></span></span></span>:类别平衡参数，用来给不同类别的样本加权重。样本越不均衡，其值应该越靠近0或1。如果y=1的数量多，则参数的值应该小于0.5。</li>
+<li><span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>γ</mi></mrow><annotation encoding="application/x-tex">\gamma</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.625em;vertical-align:-0.19444em;"></span><span class="mord mathdefault" style="margin-right:0.05556em;">γ</span></span></span></span>:focusing parameter,聚焦参数，<span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>γ</mi><mo>&gt;</mo><mo>=</mo><mn>0</mn></mrow><annotation encoding="application/x-tex">\gamma&gt;=0</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.7335400000000001em;vertical-align:-0.19444em;"></span><span class="mord mathdefault" style="margin-right:0.05556em;">γ</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">&gt;</span></span><span class="base"><span class="strut" style="height:0.36687em;vertical-align:0em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:0.64444em;vertical-align:0em;"></span><span class="mord">0</span></span></span></span>​。调整难分类样本的权重，越大，预测结果越趋近0~1的两端。​​</li>
+<li>$\left (1-p_{\mathrm{t}}\right)^{\gamma} $: modulating factor,​调节因子，使模型关注难分类的样本</li>
+</ul>
+<figure data-type="image" tabindex="1"><img src="https://raw.githubusercontent.com/MaXXXXfeng/typora-res/main/data/20211121224512.png" alt="image-20211014170830823" loading="lazy"></figure>
+<p>focal loss具有<strong>两个性质</strong>：</p>
+<blockquote>
+<p>(1)When an example is misclassified and pt is small, the modulating factor is near 1 and the loss is unaffected. As pt → 1, the factor goes to 0 and the loss for well-classified examples is down-weighted.</p>
+<p>(2) The focusing parameter γ smoothly adjusts the rate at which easy examples are down- weighted. When γ = 0, FL is equivalent to CE, and as γ is increased the effect of the modulating factor is likewise in- creased (we</p>
+</blockquote>
+<ul>
+<li>(1)当一个例子被分错后，pt很小。调节因子系数接近1，所以loss不受影响；当pt接近1时，调节因子接近于0，容易分类的例子降低了权重。</li>
+<li>(2)聚焦参数可以平滑的调整易分类例子权重下降的速度。当其=0时，公式等同于交叉熵。当其增加时，调节因子的效果也在增加。</li>
+</ul>
+<h2 id="4-论文总结">4 论文总结</h2>
+<ul>
+<li>问题：模型准确率较低</li>
+<li>原因：数据不均衡，大量易分类的负样本影响模型</li>
+<li>方法：给交叉熵加一个调节因子，更关注难分类的样本</li>
+<li>效果：理论上优于之前</li>
+</ul>
+<h2 id="6-lgb实战">6 LGB实战</h2>
+<p>参考代码： <a href="https://github.com/jrzaurin/LightGBM-with-Focal-Loss">LightGBM with Focal Loss</a></p>
+<p>lgb使用自定义focal-loss主要包括两个内容:</p>
+<ul>
+<li>
+<p>自定义损失函数</p>
+<pre><code class="language-python">def focal_loss_lgb(y_pred, dtrain, alpha, gamma):
+    &quot;&quot;&quot;
+    Focal Loss for lightgbm
+
+    Parameters:
+    -----------
+    y_pred: numpy.ndarray
+        array with the predictions
+    dtrain: lightgbm.Dataset
+    alpha, gamma: float
+        See original paper https://arxiv.org/pdf/1708.02002.pdf
+    &quot;&quot;&quot;
+    a,g = alpha, gamma
+    y_true = dtrain.label
+    def fl(x,t):
+        p = 1/(1+np.exp(-x))
+        return -( a*t + (1-a)*(1-t) ) * (( 1 - ( t*p + (1-t)*(1-p)) )**g) * ( t*np.log(p)+(1-t)*np.log(1-p) )
+    partial_fl = lambda x: fl(x, y_true)
+    grad = derivative(partial_fl, y_pred, n=1, dx=1e-6)
+    hess = derivative(partial_fl, y_pred, n=2, dx=1e-6)
+    return grad, hess
+</code></pre>
+</li>
+<li>
+<p>自定义评估函数</p>
+<pre><code class="language-python">def focal_loss_lgb_eval_error(y_pred, dtrain, alpha, gamma):
+    &quot;&quot;&quot;
+    Adapation of the Focal Loss for lightgbm to be used as evaluation loss
+
+    Parameters:
+    -----------
+    y_pred: numpy.ndarray
+        array with the predictions
+    dtrain: lightgbm.Dataset
+    alpha, gamma: float
+        See original paper https://arxiv.org/pdf/1708.02002.pdf
+    &quot;&quot;&quot;
+    a,g = alpha, gamma
+    y_true = dtrain.label
+    p = 1/(1+np.exp(-y_pred))
+    loss = -( a*y_true + (1-a)*(1-y_true) ) * (( 1 - ( y_true*p + (1-y_true)*(1-p)) )**g) * ( y_true*np.log(p)+(1-y_true)*np.log(1-p) )
+    return 'focal_loss', np.mean(loss), False
+</code></pre>
+<p>在实际使用中，通过<code>fobj</code>和<code>feval</code>指定对应的自定义损失函数和评估函数。示例如下：</p>
+<pre><code class="language-python">focal_loss = lambda x,y: focal_loss_lgb(x, y, 0.25, 2., 10)
+eval_error = lambda x,y: focal_loss_lgb_eval_error(x, y, 0.25, 2., 10)
+params  = {'learning_rate':0.1, 'num_boost_round':10, 'num_class':10}
+model = lgb.train(params, lgbtrain, valid_sets=[lgbeval], fobj=focal_loss, feval=eval_error)
+</code></pre>
+<h3 id="sklearn-api">Sklearn API</h3>
+<p>如果使用Sklearn API,需要用<code>y_rtue</code>替换原函数中的<code>dtrain</code>，并交换预测值和实际值的顺序。</p>
+<pre><code class="language-python">def focal_loss_lgb_sk(y_true, y_pred, alpha, gamma):
+    &quot;&quot;&quot;
+    Focal Loss for lightgbm
+
+    Parameters:
+    -----------
+    y_pred: numpy.ndarray
+        array with the predictions
+    dtrain: lightgbm.Dataset
+    alpha, gamma: float
+        See original paper https://arxiv.org/pdf/1708.02002.pdf
+    &quot;&quot;&quot;
+    a,g = alpha, gamma
+    def fl(x,t):
+        p = 1/(1+np.exp(-x))
+        return -( a*t + (1-a)*(1-t) ) * (( 1 - ( t*p + (1-t)*(1-p)) )**g) * ( t*np.log(p)+(1-t)*np.log(1-p) )
+    partial_fl = lambda x: fl(x, y_true)
+    grad = derivative(partial_fl, y_pred, n=1, dx=1e-6)
+    hess = derivative(partial_fl, y_pred, n=2, dx=1e-6)
+    return grad, hess
+    
+    def focal_loss_lgb_eval_error_sk(y_true, y_pred, alpha, gamma):
+    &quot;&quot;&quot;
+    Adapation of the Focal Loss for lightgbm to be used as evaluation loss
+
+    Parameters:
+    -----------
+    y_pred: numpy.ndarray
+        array with the predictions
+    dtrain: lightgbm.Dataset
+    alpha, gamma: float
+        See original paper https://arxiv.org/pdf/1708.02002.pdf
+    &quot;&quot;&quot;
+    a,g = alpha, gamma
+    p = 1/(1+np.exp(-y_pred))
+    loss = -( a*y_true + (1-a)*(1-y_true) ) * (( 1 - ( y_true*p + (1-y_true)*(1-p)) )**g) * ( y_true*np.log(p)+(1-y_true)*np.log(1-p) )
+    return 'focal_loss', np.mean(loss), False
+</code></pre>
+<p>实际使用用例如下：</p>
+<pre><code class="language-python">focal_loss = lambda x,y: focal_loss_lgb_sk(x, y, 0.25, 2.)
+eval_error = lambda x,y: focal_loss_lgb_eval_error_sk(x, y, 0.25, 2.)
+model = lgb.LGBMClassifier(objective=focal_loss, learning_rate=0.1, num_boost_round=10)
+model.fit(
+    X_tr,
+    y_tr,
+    eval_set=[(X_val, y_val)],
+    eval_metric=eval_error)
+</code></pre>
+</li>
+</ul>
+<h3 id="参数探索">参数探索</h3>
+<ul>
+<li>
+<p>探索内容：</p>
+<p>focal-loss中有主要有2个参数可以调节，分别为：</p>
+<p><strong>alpha:</strong></p>
+<p>类别平衡参数，用来给不同类别的样本加权重。样本越不均衡，其值应该越靠近0或1。如果y=1的数量多，则参数的值应该小于0.5。</p>
+<p><strong>gamma:</strong></p>
+<p>调整难分类样本的权重，其值越大，预测结果越趋近0~1的两端。</p>
+<p>分别固定一个参数，探索另一个参数对模型的效果。</p>
+</li>
+<li>
+<p>测试数据正负比例约为1：9</p>
+</li>
+</ul>
+<h4 id="331-alpha">3.3.1 Alpha</h4>
+<p>固定gamma=2.0，探索 alpha从0.1~1.0的效果</p>
+<figure data-type="image" tabindex="2"><img src="https://raw.githubusercontent.com/MaXXXXfeng/typora-res/main/data/20211121224523.jpg" alt="Catch9D7D(11-14-19-33-01)" loading="lazy"></figure>
+<h4 id="332-gamma">3.3.2 Gamma</h4>
+<p>固定alpha=0.25，探索gamma从1.0~5.0的效果</p>
+<figure data-type="image" tabindex="3"><img src="https://raw.githubusercontent.com/MaXXXXfeng/typora-res/main/data/20211121224520.jpg" alt="Catch(11-14-19-33-01)" loading="lazy"></figure>
+<ul>
+<li>
+<p><strong>结论：</strong></p>
+<p><strong>1.alpha在0.25~0.75效果比较接近，其中0.35效果最佳</strong></p>
+<p><strong>2.提高gamma可以略微提高模型效果，其中gamma=5.0效果最佳</strong></p>
+<p><strong>3.选择效果最佳的alpha和效果最佳的gamma组合，效果反而下降。</strong></p>
+<p><strong>4.不同的正负样本比例对应的最佳参数应该不同，需要根据实际情况确定</strong></p>
+</li>
+</ul>
+
+              </div>
+              <div class="toc-container">
+                <ul class="markdownIt-TOC">
+<li>
+<ul>
+<li><a href="#1-%E8%AE%BA%E6%96%87%E7%9B%AE%E6%A0%87">1 论文目标</a></li>
+<li><a href="#2-%E5%BD%93%E5%89%8D%E9%97%AE%E9%A2%98">2 当前问题</a></li>
+<li><a href="#3-%E7%BB%86%E8%8A%82%E4%BB%8B%E7%BB%8D">3 细节介绍</a></li>
+<li><a href="#4-%E8%AE%BA%E6%96%87%E6%80%BB%E7%BB%93">4 论文总结</a></li>
+<li><a href="#6-lgb%E5%AE%9E%E6%88%98">6 LGB实战</a>
+<ul>
+<li><a href="#sklearn-api">Sklearn API</a></li>
+<li><a href="#%E5%8F%82%E6%95%B0%E6%8E%A2%E7%B4%A2">参数探索</a>
+<ul>
+<li><a href="#331-alpha">3.3.1 Alpha</a></li>
+<li><a href="#332-gamma">3.3.2 Gamma</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+              </div>
+            </div>
+          </article>
+        </div>
+
+        
+          <div class="next-post">
+            <div class="next">下一篇</div>
+            <a href="https://MaXXXXfeng.github.io/post/tree-model-three/">
+              <h3 class="post-title">
+                树模型(三):LGBM和XGB
+              </h3>
+            </a>
+          </div>
+        
+
+        
+          
+            <link rel="stylesheet" href="https://unpkg.com/gitalk/dist/gitalk.css">
+<script src="https://unpkg.com/gitalk/dist/gitalk.min.js"></script>
+
+<div id="gitalk-container"></div>
+
+<script>
+
+  var gitalk = new Gitalk({
+    clientID: 'd4340f15bb5174d34269',
+    clientSecret: 'a8044523d5c79dc56062fcdaae7bbc97731a09ad',
+    repo: 'MaXXXXfeng.github.io',
+    owner: 'MaXXXXfeng',
+    admin: ['MaXXXXfeng'],
+    id: (location.pathname).substring(0, 49),      // Ensure uniqueness and length less than 50
+    distractionFreeMode: false  // Facebook-like distraction free mode
+  })
+
+  gitalk.render('gitalk-container')
+
+</script>
+
+          
+
+          
+        
+
+        <div class="site-footer">
+  Powered by <a href="https://github.com/getgridea/gridea" target="_blank">Gridea</a> | 
+  <a class="rss" href="https://MaXXXXfeng.github.io/atom.xml" target="_blank">RSS</a>
+</div>
+
+<script>
+  hljs.initHighlightingOnLoad()
+
+  let mainNavLinks = document.querySelectorAll(".markdownIt-TOC a");
+
+  // This should probably be throttled.
+  // Especially because it triggers during smooth scrolling.
+  // https://lodash.com/docs/4.17.10#throttle
+  // You could do like...
+  // window.addEventListener("scroll", () => {
+  //    _.throttle(doThatStuff, 100);
+  // });
+  // Only not doing it here to keep this Pen dependency-free.
+
+  window.addEventListener("scroll", event => {
+    let fromTop = window.scrollY;
+
+    mainNavLinks.forEach((link, index) => {
+      let section = document.getElementById(decodeURI(link.hash).substring(1));
+      let nextSection = null
+      if (mainNavLinks[index + 1]) {
+        nextSection = document.getElementById(decodeURI(mainNavLinks[index + 1].hash).substring(1));
+      }
+      console.log('section.offsetHeight', section.offsetHeight);
+      if (section.offsetTop <= fromTop) {
+        if (nextSection) {
+          if (nextSection.offsetTop > fromTop) {
+            link.classList.add("current");
+          } else {
+            link.classList.remove("current");    
+          }
+        } else {
+          link.classList.add("current");
+        }
+      } else {
+        link.classList.remove("current");
+      }
+    });
+  });
+
+</script>
+
+      </div>
+    </div>
+  </body>
+</html>
