@@ -1,0 +1,441 @@
+<html>
+  <head>
+    <meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>树模型(一) : 决策树 | Max Blog</title>
+<meta name="description" content="醉里挑灯看剑" />
+<link rel="shortcut icon" href="https://MaXXXXfeng.github.io/favicon.ico?v=1637505202854">
+<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css" integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.0/katex.min.css">
+<link rel="stylesheet" href="https://MaXXXXfeng.github.io/styles/main.css">
+
+<script src="https://cdn.bootcss.com/highlight.js/9.12.0/highlight.min.js"></script>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Droid+Serif:400,700">
+
+
+
+  </head>
+  <body>
+    <header class="site-header">
+  <a href="https://MaXXXXfeng.github.io">
+  <img class="avatar" src="https://MaXXXXfeng.github.io/images/avatar.png?v=1637505202854" alt="">
+  </a>
+  <h1 class="site-title">
+    Max Blog
+  </h1>
+  <p class="site-description">
+    醉里挑灯看剑
+  </p>
+  <div class="menu-container">
+    
+      
+        <a href="/" class="menu">
+          首页
+        </a>
+      
+    
+      
+        <a href="/archives" class="menu">
+          归档
+        </a>
+      
+    
+      
+        <a href="/tags" class="menu">
+          标签
+        </a>
+      
+    
+      
+        <a href="/post/about" class="menu">
+          关于
+        </a>
+      
+    
+  </div>
+  <div class="social-container">
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+  </div>
+</header>
+
+    <div class="main">
+      <div class="main-content">
+        <div class="post-detail">
+          <article class="post">
+            <h2 class="post-title">
+              树模型(一) : 决策树
+            </h2>
+            <div class="post-info">
+              <span>
+                2021-11-21
+              </span>
+              <span>
+                10 min read
+              </span>
+              
+                <a href="https://MaXXXXfeng.github.io/tag/machinelearning/" class="post-tag">
+                  # 机器学习
+                </a>
+              
+            </div>
+            
+              <img class="post-feature-image" src="https://MaXXXXfeng.github.io/post-images/tree-model-one.jpeg" alt="">
+            
+            <div class="post-content-wrapper">
+              <div class="post-content">
+                <p>树模型第一节，决策树基本介绍</p>
+<!-- more -->
+<h2 id="1-背景">1 背景</h2>
+<p>本篇笔记为树模型笔记第一篇，主要对决策树做一个简单的总结。后续会再针对集成学习包括xgb等模型做相关总结。</p>
+<h2 id="2-基本信息">2 基本信息</h2>
+<p>以树的形式，对数据进行回归或分类。</p>
+<p>基本流程：</p>
+<p>从根节点开始，选择特征属性进行划分，输出到分支，直到到达叶子节点。</p>
+<p>决策树的构造就是不断的进行属性选择，其中有三种情况会导致递归返回：</p>
+<ul>
+<li>1.当前节点包含的样本完全属于同一种类别，无需划分</li>
+<li>2.当前属性为空或所有样本在所有属性上取值相同，无需划分</li>
+<li>3.当前节点包含的样本集合为空，不能划分。</li>
+</ul>
+<p>针对第二种情况，把当前结点标记为叶子结点，并将其类别设定为该节点所含样本最多的类别。</p>
+<p>针对第三种情况，把当前节点标记为叶子节点，但是类别设为父节点所含样本最多的类别。</p>
+<h2 id="3-常见模型">3 常见模型</h2>
+<h3 id="31-id3-决策树">3.1 ID3 决策树</h3>
+<h4 id="311-基本信息">3.1.1 基本信息</h4>
+<p>**任务：**分类</p>
+<p><strong>特征选择依据</strong>：信息增益</p>
+<p>随机变量X的熵：</p>
+<p class='katex-block'><span class="katex-display"><span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>H</mi><mo>(</mo><mi>X</mi><mo>)</mo><mo>=</mo><mo>−</mo><munderover><mo>∑</mo><mrow><mi>i</mi><mo>=</mo><mn>1</mn></mrow><mi>n</mi></munderover><msub><mi>p</mi><mi>i</mi></msub><mi>l</mi><mi>o</mi><mi>g</mi><msub><mi>p</mi><mi>i</mi></msub></mrow><annotation encoding="application/x-tex">H(X) = -\sum_{i=1}^{n}p_{i}logp_{i}
+</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord mathdefault" style="margin-right:0.08125em;">H</span><span class="mopen">(</span><span class="mord mathdefault" style="margin-right:0.07847em;">X</span><span class="mclose">)</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:2.929066em;vertical-align:-1.277669em;"></span><span class="mord">−</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mop op-limits"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:1.6513970000000002em;"><span style="top:-1.872331em;margin-left:0em;"><span class="pstrut" style="height:3.05em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathdefault mtight">i</span><span class="mrel mtight">=</span><span class="mord mtight">1</span></span></span></span><span style="top:-3.050005em;"><span class="pstrut" style="height:3.05em;"></span><span><span class="mop op-symbol large-op">∑</span></span></span><span style="top:-4.3000050000000005em;margin-left:0em;"><span class="pstrut" style="height:3.05em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathdefault mtight">n</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:1.277669em;"><span></span></span></span></span></span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord"><span class="mord mathdefault">p</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.31166399999999994em;"><span style="top:-2.5500000000000003em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathdefault mtight">i</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mord mathdefault" style="margin-right:0.01968em;">l</span><span class="mord mathdefault">o</span><span class="mord mathdefault" style="margin-right:0.03588em;">g</span><span class="mord"><span class="mord mathdefault">p</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.31166399999999994em;"><span style="top:-2.5500000000000003em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathdefault mtight">i</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span></span></span></p>
+<p>随机变量X与关于特征A的条件熵：</p>
+<p class='katex-block'><span class="katex-display"><span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>H</mi><mo>(</mo><mi>X</mi><mi mathvariant="normal">∣</mi><mi>A</mi><mo>)</mo><mo>=</mo><munderover><mo>∑</mo><mrow><mi>j</mi><mo>=</mo><mn>1</mn></mrow><mi>n</mi></munderover><mi>p</mi><mo>(</mo><msub><mi>a</mi><mi>j</mi></msub><mo>)</mo><mi>H</mi><mo>(</mo><mi>X</mi><mi mathvariant="normal">∣</mi><msub><mi>a</mi><mi>j</mi></msub><mo>)</mo></mrow><annotation encoding="application/x-tex">H(X|A) = \sum_{j=1}^{n}p(a_j)H(X|a_j)
+</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord mathdefault" style="margin-right:0.08125em;">H</span><span class="mopen">(</span><span class="mord mathdefault" style="margin-right:0.07847em;">X</span><span class="mord">∣</span><span class="mord mathdefault">A</span><span class="mclose">)</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:3.0651740000000007em;vertical-align:-1.4137769999999998em;"></span><span class="mop op-limits"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:1.6513970000000007em;"><span style="top:-1.872331em;margin-left:0em;"><span class="pstrut" style="height:3.05em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathdefault mtight" style="margin-right:0.05724em;">j</span><span class="mrel mtight">=</span><span class="mord mtight">1</span></span></span></span><span style="top:-3.050005em;"><span class="pstrut" style="height:3.05em;"></span><span><span class="mop op-symbol large-op">∑</span></span></span><span style="top:-4.3000050000000005em;margin-left:0em;"><span class="pstrut" style="height:3.05em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathdefault mtight">n</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:1.4137769999999998em;"><span></span></span></span></span></span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord mathdefault">p</span><span class="mopen">(</span><span class="mord"><span class="mord mathdefault">a</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.311664em;"><span style="top:-2.5500000000000003em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathdefault mtight" style="margin-right:0.05724em;">j</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.286108em;"><span></span></span></span></span></span></span><span class="mclose">)</span><span class="mord mathdefault" style="margin-right:0.08125em;">H</span><span class="mopen">(</span><span class="mord mathdefault" style="margin-right:0.07847em;">X</span><span class="mord">∣</span><span class="mord"><span class="mord mathdefault">a</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.311664em;"><span style="top:-2.5500000000000003em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathdefault mtight" style="margin-right:0.05724em;">j</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.286108em;"><span></span></span></span></span></span></span><span class="mclose">)</span></span></span></span></span></p>
+<p>A对于X的信息增益：</p>
+<p class='katex-block'><span class="katex-display"><span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>I</mi><mo>(</mo><mi>X</mi><mo separator="true">,</mo><mi>A</mi><mo>)</mo><mo>=</mo><mi>H</mi><mo>(</mo><mi>X</mi><mo>)</mo><mo>−</mo><mi>H</mi><mo>(</mo><mi>X</mi><mi mathvariant="normal">∣</mi><mi>A</mi><mo>)</mo></mrow><annotation encoding="application/x-tex">I(X,A) = H(X)-H(X|A)
+</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord mathdefault" style="margin-right:0.07847em;">I</span><span class="mopen">(</span><span class="mord mathdefault" style="margin-right:0.07847em;">X</span><span class="mpunct">,</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord mathdefault">A</span><span class="mclose">)</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord mathdefault" style="margin-right:0.08125em;">H</span><span class="mopen">(</span><span class="mord mathdefault" style="margin-right:0.07847em;">X</span><span class="mclose">)</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">−</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord mathdefault" style="margin-right:0.08125em;">H</span><span class="mopen">(</span><span class="mord mathdefault" style="margin-right:0.07847em;">X</span><span class="mord">∣</span><span class="mord mathdefault">A</span><span class="mclose">)</span></span></span></span></span></p>
+<h4 id="312-缺点">3.1.2 缺点</h4>
+<ul>
+<li>不能处理连续特征</li>
+<li>基于信息增益会优先选择特征取值多的特征作为特征</li>
+<li>没有对缺失值做考虑</li>
+<li>没有考虑过拟合</li>
+</ul>
+<h3 id="32-c45-决策树">3.2 C4.5 决策树</h3>
+<h4 id="321-优化内容">3.2.1 优化内容</h4>
+<p>主要针对ID3的4个问题进行了优化</p>
+<ul>
+<li>
+<p>不能处理连续特征</p>
+<p>解决方案：连续特征离散化。将特征值进行排序，取相邻像个样本值的平均值，作为划分点。</p>
+<p>连续属性的节点后面还可以继续参与子节点的选择。</p>
+</li>
+<li>
+<p>优先选择特征取值多的特征作为特征</p>
+<p>解决方案：使用信息增益比。信息增益与特征熵的比值。</p>
+<p class='katex-block'><span class="katex-display"><span class="katex"><span class="katex-mathml"><math><semantics><mrow><msub><mi>I</mi><mi>R</mi></msub><mo>(</mo><mi>D</mi><mi mathvariant="normal">，</mi><mi>A</mi><mo>)</mo><mo>=</mo><mfrac><mrow><mi>I</mi><mo>(</mo><mi>A</mi><mo separator="true">,</mo><mi>D</mi><mo>)</mo></mrow><mrow><msub><mi>H</mi><mi>A</mi></msub><mo>(</mo><mi>D</mi><mo>)</mo></mrow></mfrac></mrow><annotation encoding="application/x-tex">I_{R}(D，A)=\frac{I(A,D)}{H_{A}(D)}
+</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord"><span class="mord mathdefault" style="margin-right:0.07847em;">I</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.32833099999999993em;"><span style="top:-2.5500000000000003em;margin-left:-0.07847em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathdefault mtight" style="margin-right:0.00773em;">R</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mopen">(</span><span class="mord mathdefault" style="margin-right:0.02778em;">D</span><span class="mord cjk_fallback">，</span><span class="mord mathdefault">A</span><span class="mclose">)</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:2.363em;vertical-align:-0.936em;"></span><span class="mord"><span class="mopen nulldelimiter"></span><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:1.427em;"><span style="top:-2.314em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord"><span class="mord mathdefault" style="margin-right:0.08125em;">H</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.32833099999999993em;"><span style="top:-2.5500000000000003em;margin-left:-0.08125em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathdefault mtight">A</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mopen">(</span><span class="mord mathdefault" style="margin-right:0.02778em;">D</span><span class="mclose">)</span></span></span><span style="top:-3.23em;"><span class="pstrut" style="height:3em;"></span><span class="frac-line" style="border-bottom-width:0.04em;"></span></span><span style="top:-3.677em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord mathdefault" style="margin-right:0.07847em;">I</span><span class="mopen">(</span><span class="mord mathdefault">A</span><span class="mpunct">,</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord mathdefault" style="margin-right:0.02778em;">D</span><span class="mclose">)</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.936em;"><span></span></span></span></span></span><span class="mclose nulldelimiter"></span></span></span></span></span></span></p>
+<p>特征熵的公式为：</p>
+<p class='katex-block'><span class="katex-display"><span class="katex"><span class="katex-mathml"><math><semantics><mrow><msub><mi>H</mi><mi>A</mi></msub><mo>(</mo><mi>D</mi><mo>)</mo><mo>=</mo><mo>−</mo><munderover><mo>∑</mo><mrow><mi>i</mi><mo>=</mo><mn>1</mn></mrow><mi>n</mi></munderover><mfrac><mrow><mi mathvariant="normal">∣</mi><msub><mi>D</mi><mi>i</mi></msub><mi mathvariant="normal">∣</mi></mrow><mrow><mi mathvariant="normal">∣</mi><mi>D</mi><mi mathvariant="normal">∣</mi></mrow></mfrac><mi>l</mi><mi>o</mi><msub><mi>g</mi><mn>2</mn></msub><mfrac><mrow><mi mathvariant="normal">∣</mi><msub><mi>D</mi><mi>i</mi></msub><mi mathvariant="normal">∣</mi></mrow><mi>D</mi></mfrac></mrow><annotation encoding="application/x-tex">H_{A}(D)=-\sum_{i=1}^{n}\frac{|D_{i}|}{|D|}log_2\frac{|D_i|}{D}
+</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord"><span class="mord mathdefault" style="margin-right:0.08125em;">H</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.32833099999999993em;"><span style="top:-2.5500000000000003em;margin-left:-0.08125em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathdefault mtight">A</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mopen">(</span><span class="mord mathdefault" style="margin-right:0.02778em;">D</span><span class="mclose">)</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:2.929066em;vertical-align:-1.277669em;"></span><span class="mord">−</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mop op-limits"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:1.6513970000000002em;"><span style="top:-1.872331em;margin-left:0em;"><span class="pstrut" style="height:3.05em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathdefault mtight">i</span><span class="mrel mtight">=</span><span class="mord mtight">1</span></span></span></span><span style="top:-3.050005em;"><span class="pstrut" style="height:3.05em;"></span><span><span class="mop op-symbol large-op">∑</span></span></span><span style="top:-4.3000050000000005em;margin-left:0em;"><span class="pstrut" style="height:3.05em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathdefault mtight">n</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:1.277669em;"><span></span></span></span></span></span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord"><span class="mopen nulldelimiter"></span><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:1.427em;"><span style="top:-2.314em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord">∣</span><span class="mord mathdefault" style="margin-right:0.02778em;">D</span><span class="mord">∣</span></span></span><span style="top:-3.23em;"><span class="pstrut" style="height:3em;"></span><span class="frac-line" style="border-bottom-width:0.04em;"></span></span><span style="top:-3.677em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord">∣</span><span class="mord"><span class="mord mathdefault" style="margin-right:0.02778em;">D</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.31166399999999994em;"><span style="top:-2.5500000000000003em;margin-left:-0.02778em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathdefault mtight">i</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mord">∣</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.936em;"><span></span></span></span></span></span><span class="mclose nulldelimiter"></span></span><span class="mord mathdefault" style="margin-right:0.01968em;">l</span><span class="mord mathdefault">o</span><span class="mord"><span class="mord mathdefault" style="margin-right:0.03588em;">g</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.30110799999999993em;"><span style="top:-2.5500000000000003em;margin-left:-0.03588em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">2</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mord"><span class="mopen nulldelimiter"></span><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:1.427em;"><span style="top:-2.314em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord mathdefault" style="margin-right:0.02778em;">D</span></span></span><span style="top:-3.23em;"><span class="pstrut" style="height:3em;"></span><span class="frac-line" style="border-bottom-width:0.04em;"></span></span><span style="top:-3.677em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord">∣</span><span class="mord"><span class="mord mathdefault" style="margin-right:0.02778em;">D</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.31166399999999994em;"><span style="top:-2.5500000000000003em;margin-left:-0.02778em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathdefault mtight">i</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mord">∣</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.686em;"><span></span></span></span></span></span><span class="mclose nulldelimiter"></span></span></span></span></span></span></p>
+<p>其中，$$|D|$$为样本个数。</p>
+<p>特征取值越多的特征，对应的特征熵就越大，可以校正之前偏向取此类特征的问题。</p>
+</li>
+<li>
+<p>无法处理缺失值</p>
+<ul>
+<li>
+<p>样本在某些特征缺失的情况</p>
+<p>将样本划分为有缺失和无缺失两部分样本。计算无缺失部分的信息增益比，再乘以无缺失样本占总样本的占比。作为该特征的信息增益比。</p>
+</li>
+<li>
+<p>选定了划分属性，对于该属性上特征缺失的样本处理</p>
+<p>将缺失同时划分入所有的子节点。该样本的权重是按各子节点的样本数量来分配。</p>
+</li>
+</ul>
+</li>
+<li>
+<p>没有考虑过拟合</p>
+<p>引入正则化系数进行剪枝</p>
+</li>
+</ul>
+<h4 id="322-缺点">3.2.2 缺点</h4>
+<ul>
+<li>剪枝方法有优化空间</li>
+<li>生产的是多叉树。如果是二叉树，效率更高</li>
+<li>只能用于分类</li>
+<li>熵模型用到大量的对数运算，连续值涉及排序运算。有优化空间。</li>
+</ul>
+<h3 id="33-cart树">3.3 CART树</h3>
+<h4 id="331-特征选择方法">3.3.1 特征选择方法</h4>
+<p>使用基尼系数为特征选择方法</p>
+<p>假设K个类别，第k个类的概率为<span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>p</mi><mi>k</mi></mrow><annotation encoding="application/x-tex">pk</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8888799999999999em;vertical-align:-0.19444em;"></span><span class="mord mathdefault">p</span><span class="mord mathdefault" style="margin-right:0.03148em;">k</span></span></span></span></p>
+<p class='katex-block'><span class="katex-display"><span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>G</mi><mi>i</mi><mi>n</mi><mi>i</mi><mo>(</mo><mi>p</mi><mo>)</mo><mo>=</mo><munderover><mo>∑</mo><mrow><mi>k</mi><mo>=</mo><mn>1</mn></mrow><mi>K</mi></munderover><msub><mi>p</mi><mi>k</mi></msub><mo>(</mo><mn>1</mn><mo>−</mo><msub><mi>p</mi><mi>k</mi></msub><mo>)</mo><mo>=</mo><mn>1</mn><mo>−</mo><munderover><mo>∑</mo><mrow><mi>k</mi><mo>=</mo><mn>1</mn></mrow><mi>K</mi></munderover><msubsup><mi>p</mi><mi>k</mi><mn>2</mn></msubsup></mrow><annotation encoding="application/x-tex">Gini(p)=\sum_{k=1}^{K}p_{k}(1-p_{k})=1-\sum_{k=1}^{K}p_{k}^2
+</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord mathdefault">G</span><span class="mord mathdefault">i</span><span class="mord mathdefault">n</span><span class="mord mathdefault">i</span><span class="mopen">(</span><span class="mord mathdefault">p</span><span class="mclose">)</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:3.1304490000000005em;vertical-align:-1.302113em;"></span><span class="mop op-limits"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:1.8283360000000002em;"><span style="top:-1.8478869999999998em;margin-left:0em;"><span class="pstrut" style="height:3.05em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathdefault mtight" style="margin-right:0.03148em;">k</span><span class="mrel mtight">=</span><span class="mord mtight">1</span></span></span></span><span style="top:-3.0500049999999996em;"><span class="pstrut" style="height:3.05em;"></span><span><span class="mop op-symbol large-op">∑</span></span></span><span style="top:-4.300005em;margin-left:0em;"><span class="pstrut" style="height:3.05em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathdefault mtight" style="margin-right:0.07153em;">K</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:1.302113em;"><span></span></span></span></span></span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord"><span class="mord mathdefault">p</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.33610799999999996em;"><span style="top:-2.5500000000000003em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathdefault mtight" style="margin-right:0.03148em;">k</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mopen">(</span><span class="mord">1</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">−</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord"><span class="mord mathdefault">p</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.33610799999999996em;"><span style="top:-2.5500000000000003em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathdefault mtight" style="margin-right:0.03148em;">k</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mclose">)</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:0.72777em;vertical-align:-0.08333em;"></span><span class="mord">1</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">−</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:3.1304490000000005em;vertical-align:-1.302113em;"></span><span class="mop op-limits"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:1.8283360000000002em;"><span style="top:-1.8478869999999998em;margin-left:0em;"><span class="pstrut" style="height:3.05em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathdefault mtight" style="margin-right:0.03148em;">k</span><span class="mrel mtight">=</span><span class="mord mtight">1</span></span></span></span><span style="top:-3.0500049999999996em;"><span class="pstrut" style="height:3.05em;"></span><span><span class="mop op-symbol large-op">∑</span></span></span><span style="top:-4.300005em;margin-left:0em;"><span class="pstrut" style="height:3.05em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathdefault mtight" style="margin-right:0.07153em;">K</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:1.302113em;"><span></span></span></span></span></span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord"><span class="mord mathdefault">p</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.8641079999999999em;"><span style="top:-2.4530000000000003em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathdefault mtight" style="margin-right:0.03148em;">k</span></span></span></span><span style="top:-3.113em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">2</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.247em;"><span></span></span></span></span></span></span></span></span></span></span></p>
+<p>二分类问题对应的基尼系数表达式</p>
+<p class='katex-block'><span class="katex-display"><span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>G</mi><mi>i</mi><mi>n</mi><mi>i</mi><mo>(</mo><mi>p</mi><mo>)</mo><mo>=</mo><mn>2</mn><mi>p</mi><mo>(</mo><mn>1</mn><mo>−</mo><mi>p</mi><mo>)</mo></mrow><annotation encoding="application/x-tex">Gini(p)=2p(1-p)
+</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord mathdefault">G</span><span class="mord mathdefault">i</span><span class="mord mathdefault">n</span><span class="mord mathdefault">i</span><span class="mopen">(</span><span class="mord mathdefault">p</span><span class="mclose">)</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord">2</span><span class="mord mathdefault">p</span><span class="mopen">(</span><span class="mord">1</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">−</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord mathdefault">p</span><span class="mclose">)</span></span></span></span></span></p>
+<p>对于样本D，根据特征A的某个值a,把D分成$$D_1$$$$D_2$$两部分，基尼系数表达式如下</p>
+<p class='katex-block'><span class="katex-display"><span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>G</mi><mi>i</mi><mi>n</mi><mi>i</mi><mo>(</mo><mi>D</mi><mo separator="true">,</mo><mi>A</mi><mo>)</mo><mo>=</mo><mfrac><mrow><mi mathvariant="normal">∣</mi><msub><mi>D</mi><mn>1</mn></msub><mi mathvariant="normal">∣</mi></mrow><mrow><mi mathvariant="normal">∣</mi><mi>D</mi><mi mathvariant="normal">∣</mi></mrow></mfrac><mi>G</mi><mi>i</mi><mi>n</mi><mi>i</mi><mo>(</mo><msub><mi>D</mi><mn>1</mn></msub><mo>)</mo><mo>+</mo><mfrac><mrow><mi mathvariant="normal">∣</mi><msub><mi>D</mi><mn>2</mn></msub><mi mathvariant="normal">∣</mi></mrow><mrow><mi mathvariant="normal">∣</mi><mi>D</mi><mi mathvariant="normal">∣</mi></mrow></mfrac><mi>G</mi><mi>i</mi><mi>n</mi><mi>i</mi><mo>(</mo><msub><mi>D</mi><mn>2</mn></msub><mo>)</mo></mrow><annotation encoding="application/x-tex">Gini(D,A)=\frac{|D_1|}{|D|}Gini(D_1)+\frac{|D_2|}{|D|}Gini(D_2)
+</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord mathdefault">G</span><span class="mord mathdefault">i</span><span class="mord mathdefault">n</span><span class="mord mathdefault">i</span><span class="mopen">(</span><span class="mord mathdefault" style="margin-right:0.02778em;">D</span><span class="mpunct">,</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord mathdefault">A</span><span class="mclose">)</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:2.363em;vertical-align:-0.936em;"></span><span class="mord"><span class="mopen nulldelimiter"></span><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:1.427em;"><span style="top:-2.314em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord">∣</span><span class="mord mathdefault" style="margin-right:0.02778em;">D</span><span class="mord">∣</span></span></span><span style="top:-3.23em;"><span class="pstrut" style="height:3em;"></span><span class="frac-line" style="border-bottom-width:0.04em;"></span></span><span style="top:-3.677em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord">∣</span><span class="mord"><span class="mord mathdefault" style="margin-right:0.02778em;">D</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.30110799999999993em;"><span style="top:-2.5500000000000003em;margin-left:-0.02778em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">1</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mord">∣</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.936em;"><span></span></span></span></span></span><span class="mclose nulldelimiter"></span></span><span class="mord mathdefault">G</span><span class="mord mathdefault">i</span><span class="mord mathdefault">n</span><span class="mord mathdefault">i</span><span class="mopen">(</span><span class="mord"><span class="mord mathdefault" style="margin-right:0.02778em;">D</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.30110799999999993em;"><span style="top:-2.5500000000000003em;margin-left:-0.02778em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">1</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mclose">)</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:2.363em;vertical-align:-0.936em;"></span><span class="mord"><span class="mopen nulldelimiter"></span><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:1.427em;"><span style="top:-2.314em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord">∣</span><span class="mord mathdefault" style="margin-right:0.02778em;">D</span><span class="mord">∣</span></span></span><span style="top:-3.23em;"><span class="pstrut" style="height:3em;"></span><span class="frac-line" style="border-bottom-width:0.04em;"></span></span><span style="top:-3.677em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord">∣</span><span class="mord"><span class="mord mathdefault" style="margin-right:0.02778em;">D</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.30110799999999993em;"><span style="top:-2.5500000000000003em;margin-left:-0.02778em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">2</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mord">∣</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.936em;"><span></span></span></span></span></span><span class="mclose nulldelimiter"></span></span><span class="mord mathdefault">G</span><span class="mord mathdefault">i</span><span class="mord mathdefault">n</span><span class="mord mathdefault">i</span><span class="mopen">(</span><span class="mord"><span class="mord mathdefault" style="margin-right:0.02778em;">D</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.30110799999999993em;"><span style="top:-2.5500000000000003em;margin-left:-0.02778em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">2</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mclose">)</span></span></span></span></span></p>
+<p>基尼系数可以看成熵模型的近似替代，同时二次运算比对数运算要简单。</p>
+<p>同时，建立的是二叉树，不是多叉树，可以进一步简化运算。</p>
+<h4 id="332-连续值和离散值的处理">3.3.2 连续值和离散值的处理</h4>
+<ul>
+<li>
+<p>连续值</p>
+<p>连续特征离散化。与C4.5的区别是选取的度量方式不同。C4.5选用的是信息增益比，CART树使用的是基尼系数。</p>
+</li>
+<li>
+<p>离散值</p>
+<p>思路：不停的二分离散特征。</p>
+<p>比如有A1,A2,A3三个值。CART会计算{A1}{A2,A3}和{A2}{A1,A3}和{A3}{A1,A2}三个组合各自的基尼系数。找到最小基尼系数作为划分节点。</p>
+<p>离散特征可能会参与多次节点的建立(ID3,C4.5只会一次)。</p>
+</li>
+</ul>
+<h4 id="333-cart分类树">3.3.3 CART分类树</h4>
+<p>算法输入：训练集D，基尼系数阈值，样本个数阈值</p>
+<p>输出：决策树T</p>
+<p>从根节点开始，递归的建立CART树</p>
+<ul>
+<li>(1)对于当前节点数据集D，如果样本个数小于阈值或者没有特征，返回决策树，当前节点停止递归</li>
+<li>(2)计算样本集D的基尼系数，如果基尼系数小于阈值，返回决策树子树，当前节点停止递归</li>
+<li>(3)计算当前节点现有各个特征的各个值对数据集D的基尼系数(缺失值离散值连续值各自处理方法见前面内容)</li>
+<li>(4)选择基尼系数最小的特征A和对应的值a，把数据分成$$D_1$$和$$D_2$$</li>
+<li>(5)对左右子节点递归调用1~4步，生产决策树</li>
+</ul>
+<p>使用生成的决策树做预测时，假如测试集里的样本A落到了某叶子节点，而节点里有多个训练样本，样本A的类别预测采用的是这个叶子节点里概率最大的类别。</p>
+<h4 id="334-cart回归树">3.3.4 CART回归树</h4>
+<h5 id="与分类树的区别">与分类树的区别</h5>
+<p>回归树与分类树的区别在于样本输出：</p>
+<ul>
+<li>样本输出离散值：分类树</li>
+<li>样本输出连续值：回归树</li>
+</ul>
+<p>CART回归树与分类树在建立和预测主要有以下两个区别：</p>
+<ul>
+<li>(1)连续值处理方式不同</li>
+<li>(2)预测方式不同</li>
+</ul>
+<h5 id="连续值处理方式">连续值处理方式</h5>
+<p>连续值的处理方式：</p>
+<p>使用均方差的度量方式替换基尼系数。</p>
+<p>划分点a把数据分成$$D_1$$和$$D_2$$,使得各自数据集合的均方差最小同时两者均方差之和最小。</p>
+<h5 id="预测方法">预测方法</h5>
+<p>用最终叶子的均值或者中位数来预测输出结果</p>
+<h4 id="335-剪枝">3.3.5 剪枝</h4>
+<p>CART采用的办法是后剪枝法，即先生成决策树，然后产生所有可能的剪枝后的CART树，然后使用交叉验证来检验各种剪枝的效果，选择泛化能力最好的剪枝策略。</p>
+<p>CART树的剪枝算法可以概括为两步，第一步是从原始决策树生成各种剪枝效果的决策树，第二部是用交叉验证来检验剪枝后的预测能力，选择泛化预测能力最好的剪枝后的数作为最终的CART树。</p>
+<p>大致思路为，自下而上，计算损失。如果剪掉子树和不剪子树的损失差小于阈值，则剪去子树，最终选择最优子树。</p>
+<h4 id="326-缺点">3.2.6 缺点</h4>
+<ul>
+<li>1.分类决策时依据一个特征决定，没有使用多变量同时决策</li>
+<li>2.样本发生改动就会导致树结构剧烈改变</li>
+</ul>
+<h2 id="4-决策树总结">4 决策树总结</h2>
+<table>
+<thead>
+<tr>
+<th>算法</th>
+<th>支持模型</th>
+<th>树结构</th>
+<th>特征选择</th>
+<th>连续值处理</th>
+<th>缺失值处理</th>
+<th>剪枝</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>ID3</td>
+<td>分类</td>
+<td>多叉树</td>
+<td>信息增益</td>
+<td>不支持</td>
+<td>不支持</td>
+<td>不支持</td>
+</tr>
+<tr>
+<td>C4.5</td>
+<td>分类</td>
+<td>多叉树</td>
+<td>信息增益比</td>
+<td>支持</td>
+<td>支持</td>
+<td>支持</td>
+</tr>
+<tr>
+<td>CART</td>
+<td>分类、回归</td>
+<td>二叉树</td>
+<td>基尼系数,均方差</td>
+<td>支持</td>
+<td>支持</td>
+<td>支持</td>
+</tr>
+</tbody>
+</table>
+<p><strong>优点</strong></p>
+<p>1）简单直观，生成的决策树很直观。</p>
+<p>2）基本不需要预处理，不需要提前归一化，处理缺失值。</p>
+<p>3）使用决策树预测的代价是𝑂(𝑙𝑜𝑔2𝑚)。 m为样本数。</p>
+<p>4）既可以处理离散值也可以处理连续值。很多算法只是专注于离散值或者连续值。</p>
+<p>5）可以处理多维度输出的分类问题。</p>
+<p>6）相比于神经网络之类的黑盒分类模型，决策树在逻辑上可以得到很好的解释</p>
+<p>7）可以交叉验证的剪枝来选择模型，从而提高泛化能力。</p>
+<p>8） 对于异常点的容错能力好，健壮性高。</p>
+<p><strong>缺点</strong></p>
+<p>1）决策树算法非常容易过拟合，导致泛化能力不强。可以通过设置节点最少样本数量和限制决策树深度来改进。</p>
+<p>2）决策树会因为样本发生一点点的改动，就会导致树结构的剧烈改变。这个可以通过集成学习之类的方法解决。</p>
+<p>3）寻找最优的决策树是一个NP难的问题，我们一般是通过启发式方法，容易陷入局部最优。可以通过集成学习之类的方法来改善。</p>
+<p>4）有些比较复杂的关系，决策树很难学习，比如异或。这个就没有办法了，一般这种关系可以换神经网络分类方法来解决。</p>
+<p>5）如果某些特征的样本比例过大，生成决策树容易偏向于这些特征。这个可以通过调节样本权重来改善。</p>
+
+              </div>
+              <div class="toc-container">
+                <ul class="markdownIt-TOC">
+<li>
+<ul>
+<li><a href="#1-%E8%83%8C%E6%99%AF">1 背景</a></li>
+<li><a href="#2-%E5%9F%BA%E6%9C%AC%E4%BF%A1%E6%81%AF">2 基本信息</a></li>
+<li><a href="#3-%E5%B8%B8%E8%A7%81%E6%A8%A1%E5%9E%8B">3 常见模型</a>
+<ul>
+<li><a href="#31-id3-%E5%86%B3%E7%AD%96%E6%A0%91">3.1 ID3 决策树</a>
+<ul>
+<li><a href="#311-%E5%9F%BA%E6%9C%AC%E4%BF%A1%E6%81%AF">3.1.1 基本信息</a></li>
+<li><a href="#312-%E7%BC%BA%E7%82%B9">3.1.2 缺点</a></li>
+</ul>
+</li>
+<li><a href="#32-c45-%E5%86%B3%E7%AD%96%E6%A0%91">3.2 C4.5 决策树</a>
+<ul>
+<li><a href="#321-%E4%BC%98%E5%8C%96%E5%86%85%E5%AE%B9">3.2.1 优化内容</a></li>
+<li><a href="#322-%E7%BC%BA%E7%82%B9">3.2.2 缺点</a></li>
+</ul>
+</li>
+<li><a href="#33-cart%E6%A0%91">3.3 CART树</a>
+<ul>
+<li><a href="#331-%E7%89%B9%E5%BE%81%E9%80%89%E6%8B%A9%E6%96%B9%E6%B3%95">3.3.1 特征选择方法</a></li>
+<li><a href="#332-%E8%BF%9E%E7%BB%AD%E5%80%BC%E5%92%8C%E7%A6%BB%E6%95%A3%E5%80%BC%E7%9A%84%E5%A4%84%E7%90%86">3.3.2 连续值和离散值的处理</a></li>
+<li><a href="#333-cart%E5%88%86%E7%B1%BB%E6%A0%91">3.3.3 CART分类树</a></li>
+<li><a href="#334-cart%E5%9B%9E%E5%BD%92%E6%A0%91">3.3.4 CART回归树</a>
+<ul>
+<li><a href="#%E4%B8%8E%E5%88%86%E7%B1%BB%E6%A0%91%E7%9A%84%E5%8C%BA%E5%88%AB">与分类树的区别</a></li>
+<li><a href="#%E8%BF%9E%E7%BB%AD%E5%80%BC%E5%A4%84%E7%90%86%E6%96%B9%E5%BC%8F">连续值处理方式</a></li>
+<li><a href="#%E9%A2%84%E6%B5%8B%E6%96%B9%E6%B3%95">预测方法</a></li>
+</ul>
+</li>
+<li><a href="#335-%E5%89%AA%E6%9E%9D">3.3.5 剪枝</a></li>
+<li><a href="#326-%E7%BC%BA%E7%82%B9">3.2.6 缺点</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#4-%E5%86%B3%E7%AD%96%E6%A0%91%E6%80%BB%E7%BB%93">4 决策树总结</a></li>
+</ul>
+</li>
+</ul>
+
+              </div>
+            </div>
+          </article>
+        </div>
+
+        
+          <div class="next-post">
+            <div class="next">下一篇</div>
+            <a href="https://MaXXXXfeng.github.io/post/linear-regression/">
+              <h3 class="post-title">
+                线性回归总结
+              </h3>
+            </a>
+          </div>
+        
+
+        
+          
+            <link rel="stylesheet" href="https://unpkg.com/gitalk/dist/gitalk.css">
+<script src="https://unpkg.com/gitalk/dist/gitalk.min.js"></script>
+
+<div id="gitalk-container"></div>
+
+<script>
+
+  var gitalk = new Gitalk({
+    clientID: 'd4340f15bb5174d34269',
+    clientSecret: 'a8044523d5c79dc56062fcdaae7bbc97731a09ad',
+    repo: 'MaXXXXfeng.github.io',
+    owner: 'MaXXXXfeng',
+    admin: ['MaXXXXfeng'],
+    id: (location.pathname).substring(0, 49),      // Ensure uniqueness and length less than 50
+    distractionFreeMode: false  // Facebook-like distraction free mode
+  })
+
+  gitalk.render('gitalk-container')
+
+</script>
+
+          
+
+          
+        
+
+        <div class="site-footer">
+  Powered by <a href="https://github.com/getgridea/gridea" target="_blank">Gridea</a> | 
+  <a class="rss" href="https://MaXXXXfeng.github.io/atom.xml" target="_blank">RSS</a>
+</div>
+
+<script>
+  hljs.initHighlightingOnLoad()
+
+  let mainNavLinks = document.querySelectorAll(".markdownIt-TOC a");
+
+  // This should probably be throttled.
+  // Especially because it triggers during smooth scrolling.
+  // https://lodash.com/docs/4.17.10#throttle
+  // You could do like...
+  // window.addEventListener("scroll", () => {
+  //    _.throttle(doThatStuff, 100);
+  // });
+  // Only not doing it here to keep this Pen dependency-free.
+
+  window.addEventListener("scroll", event => {
+    let fromTop = window.scrollY;
+
+    mainNavLinks.forEach((link, index) => {
+      let section = document.getElementById(decodeURI(link.hash).substring(1));
+      let nextSection = null
+      if (mainNavLinks[index + 1]) {
+        nextSection = document.getElementById(decodeURI(mainNavLinks[index + 1].hash).substring(1));
+      }
+      console.log('section.offsetHeight', section.offsetHeight);
+      if (section.offsetTop <= fromTop) {
+        if (nextSection) {
+          if (nextSection.offsetTop > fromTop) {
+            link.classList.add("current");
+          } else {
+            link.classList.remove("current");    
+          }
+        } else {
+          link.classList.add("current");
+        }
+      } else {
+        link.classList.remove("current");
+      }
+    });
+  });
+
+</script>
+
+      </div>
+    </div>
+  </body>
+</html>
