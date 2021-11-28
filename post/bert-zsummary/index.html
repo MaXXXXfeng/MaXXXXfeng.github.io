@@ -1,0 +1,448 @@
+<html>
+  <head>
+    <meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Bert总结 | Max Blog</title>
+<meta name="description" content="醉里挑灯看剑" />
+<link rel="shortcut icon" href="https://MaXXXXfeng.github.io/favicon.ico?v=1638104284913">
+<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css" integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.0/katex.min.css">
+<link rel="stylesheet" href="https://MaXXXXfeng.github.io/styles/main.css">
+
+<script src="https://cdn.bootcss.com/highlight.js/9.12.0/highlight.min.js"></script>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Droid+Serif:400,700">
+
+
+
+  </head>
+  <body>
+    <header class="site-header">
+  <a href="https://MaXXXXfeng.github.io">
+  <img class="avatar" src="https://MaXXXXfeng.github.io/images/avatar.png?v=1638104284913" alt="">
+  </a>
+  <h1 class="site-title">
+    Max Blog
+  </h1>
+  <p class="site-description">
+    醉里挑灯看剑
+  </p>
+  <div class="menu-container">
+    
+      
+        <a href="/" class="menu">
+          首页
+        </a>
+      
+    
+      
+        <a href="/archives" class="menu">
+          归档
+        </a>
+      
+    
+      
+        <a href="/tags" class="menu">
+          标签
+        </a>
+      
+    
+      
+        <a href="/post/about" class="menu">
+          关于
+        </a>
+      
+    
+  </div>
+  <div class="social-container">
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+  </div>
+</header>
+
+    <div class="main">
+      <div class="main-content">
+        <div class="post-detail">
+          <article class="post">
+            <h2 class="post-title">
+              Bert总结
+            </h2>
+            <div class="post-info">
+              <span>
+                2020-10-09
+              </span>
+              <span>
+                9 min read
+              </span>
+              
+                <a href="https://MaXXXXfeng.github.io/tag/deeplearning/" class="post-tag">
+                  # 深度学习
+                </a>
+              
+                <a href="https://MaXXXXfeng.github.io/tag/nlp/" class="post-tag">
+                  # 自然语言处理
+                </a>
+              
+            </div>
+            
+              <img class="post-feature-image" src="https://MaXXXXfeng.github.io/post-images/bert-zsummary.jpg" alt="">
+            
+            <div class="post-content-wrapper">
+              <div class="post-content">
+                <p>Bert的论文解读和基于pytorch的基本用法</p>
+<!-- more -->
+<h2 id="1-介绍">1 介绍</h2>
+<p>bert全称：<strong>B</strong>idirectional <strong>E</strong>ncoder <strong>R</strong>epresentation from <strong>T</strong>ransformers，双向Transformer的Encoder。</p>
+<p>简单概况，bert就是一个多层transformer的encoder叠加的文本特征抽取模型。</p>
+<p>在实际的任务上取得了很好的效果。同时操作简单。 发布后被广泛使用。</p>
+<img src="https://raw.githubusercontent.com/MaXXXXfeng/typora-res/main/data/20210309222345.png" alt="1611152395706" style="zoom:50%;" />
+<p>bert的主要的作用就是将输入的文本进行编码，抽取特征，将输入的文本转成向量,可以看出word2vec的高级版。</p>
+<img src="https://raw.githubusercontent.com/MaXXXXfeng/typora-res/main/data/20210309222410.png" alt="1611152718972" style="zoom: 33%;" />
+<h2 id="2-模型">2 模型</h2>
+<h3 id="21-基本结构">2.1 基本结构</h3>
+<p>bert模型模型结构为： 输入-&gt;多层transformer的encoder-&gt;输出</p>
+<figure data-type="image" tabindex="1"><img src="https://raw.githubusercontent.com/MaXXXXfeng/typora-res/main/data/20210309222418.png" alt="1611152892777" loading="lazy"></figure>
+<p>模型大致分成base版本和large版本。</p>
+<p>Base版本： 12层transformer encoder，隐藏层神经元768，self-attention head数量12，110M个参数。</p>
+<p>Large版本：24层transformer encoder，隐藏层神经元1024，self-attention head数量16，340M个参数。</p>
+<h4 id="输入表示">输入表示</h4>
+<p>表示输入的embedding，一共由3部分组成：</p>
+<p>token_embedding + segment_embeddin +position_embedding</p>
+<figure data-type="image" tabindex="2"><img src="https://raw.githubusercontent.com/MaXXXXfeng/typora-res/main/data/20210309223104" alt="img" loading="lazy"></figure>
+<h5 id="token_embedding-词向量">token_embedding: 词向量</h5>
+<p>输入文本在进入token embedding之前，会加入cls和sep两个特殊标记符。</p>
+<figure data-type="image" tabindex="3"><img src="https://raw.githubusercontent.com/MaXXXXfeng/typora-res/main/data/20210309223035.png" alt="img" loading="lazy"></figure>
+<p>为了避免未登录词问题，bert中使用了Word Piece处理方法。对于英文单词进行了更细粒度的切分。</p>
+<p>如playing会被切成play 和 #ing 两个更细粒度的词。 此方法不适用于中文，中文bert在使用中会以单个汉字为最小单元。</p>
+<h5 id="segment_embedding-句向量">segment_embedding: 句向量</h5>
+<p>用来区分两个句子是否是一个句子。前一个句子用0表示，后一个句子用1表示。</p>
+<p>如果输入只有一个句子，则segment embedding就全部是0。</p>
+<img src="https://raw.githubusercontent.com/MaXXXXfeng/typora-res/main/data/20210309222829.webp" alt="img" style="zoom:33%;" />
+<h5 id="position_embedding-位置向量">position_embedding: 位置向量</h5>
+<p>transformers使用三角函数编码，对偶数位置使用正弦编码，奇数位置使用余弦编码。</p>
+<p>Bert的postition embedding改为可以学习的向量，在训练过程中学习位置信息。</p>
+<p>注意：bert的输入最大长度为512(包括cls和sep)。超过的会被截断。</p>
+<h3 id="22-各层作用">2.2 各层作用</h3>
+<p>bert的24层按从底层到高层，学习到的信息逐渐抽象。层数越高，学习到的信息越高级。</p>
+<p>具体每一层具体学习到什么内容可以参考论文：BERT Rediscovers the Classical NLP Pipeline。该论文尝试解释了bert每一层在学习什么信息。</p>
+<p>论文使用8种NLP任务，对bert各层的作用进行了测试。</p>
+<p>8种测试任务：句法分析(POS),成分分析(Consts),依存分析(Deps),实体识别(Entities),语义角色标注(SRL),共指消解(Coref),语义原始角色标注(SPR),关系分类(SemEval)。</p>
+<p>下图中每一行图片表示一种nlp任务，每一行的图片，蓝色的宽度表示该层的向量对任务的重要程度。横轴表示对应的bert层数，越向右，层数约大。</p>
+<figure data-type="image" tabindex="4"><img src="https://raw.githubusercontent.com/MaXXXXfeng/typora-res/main/data/20210309222153.png" alt="image-20210128143940948" loading="lazy"></figure>
+<p>下图中右侧数值，expected layer的值(粉色部分)表示对应任务在哪一层被较好的解决。center-of-gravity的值(蓝色)越高，代表对应任务需要更高层的编码信息。</p>
+<figure data-type="image" tabindex="5"><img src="https://raw.githubusercontent.com/MaXXXXfeng/typora-res/main/data/20210309222127.png" alt="image-20210128144929390" loading="lazy"></figure>
+<p>从图中可以得出结论，对于较关注词本身性质的任务，底层的结果比较重要。越复杂的任务，高层输出的结果越重要。语法信息出现在bert的较低层，高级的语义信息出现在较高层。</p>
+<h2 id="3-模型训练">3 模型训练</h2>
+<p>训练语料</p>
+<p>英文使用：BooksCorpus (800M words), English Wikipedia(2500M words)</p>
+<p>中文使用：主要基于中文维基百科的全部内容</p>
+<p>训练用时</p>
+<p>base版本：4 Cloud TPU， 4天</p>
+<p>large版本： 16 Cloud TPU，4天</p>
+<p>实际使用中，默认加载预训练好的模型进行微调(fine-tune)。不会重新训练一个bert模型。</p>
+<h3 id="训练任务1masked-lm">训练任务1：Masked LM</h3>
+<p>在训练语料中，随机将15%的token替换成[mask]字符，去根据前后信息预测mask的词。</p>
+<p>[mask]在实际任务中不会出现，导致训练语料与实际语料存在偏差。为了降低影响，对需要mask的词进行3种替换方式</p>
+<ul>
+<li>
+<p>80%的token使用mask替换</p>
+</li>
+<li>
+<p>10%随机取其他的token替换当前的词</p>
+</li>
+<li>
+<p>10%保持不变</p>
+</li>
+</ul>
+<p>预测位置对应的token的输出向量接一个线性分类。</p>
+<p>选用线性分类器的原因： 分类能力弱，如果希望模型的分类准确，需要bert层抽取特征效果足够好。</p>
+<img src="https://raw.githubusercontent.com/MaXXXXfeng/typora-res/main/data/20210309222607.png" alt="1611237614891" style="zoom:50%;" />
+<h3 id="训练任务2next-sentence-predictionnsp">训练任务2：Next Sentence Prediction(NSP)</h3>
+<p>输入一个句子对，预测第二句是否是第一句的下文。</p>
+<p>输入两个句子，句子A和句子B，其中句子B有50%的概率为句子的下一句。</p>
+<p>训练中用的两个标志符：</p>
+<p>[CLS] ： 句子类别信息，出现在第一句的首位。</p>
+<p>[SEP] ： 句子分隔符，出现在句子的结尾处。</p>
+<img src="https://raw.githubusercontent.com/MaXXXXfeng/typora-res/main/data/20210309222617.png" alt="1611408276539" style="zoom:50%;" />
+<h2 id="4-具体使用">4 具体使用</h2>
+<p>使用预训练+微调的方式进行实际任务操作。</p>
+<p>基于预训练好的bert模型，针对不同的任务后接不同的输出层。</p>
+<p>新增的输出层和预训练的模型参数同时训练。</p>
+<p>论文中给出了4种常见任务类型的使用方法</p>
+<h4 id="case1">case1</h4>
+<p>输入：单个句子</p>
+<p>输出：类别</p>
+<p>常见任务： 文本分类</p>
+<img src="https://raw.githubusercontent.com/MaXXXXfeng/typora-res/main/data/20210309222624.png" alt="1611242398648" style="zoom:50%;" />
+<h4 id="case2">case2</h4>
+<p>输入：单个句子</p>
+<p>输出：每个token的分类</p>
+<p>常见任务：命名实体识别</p>
+<img src="https://raw.githubusercontent.com/MaXXXXfeng/typora-res/main/data/20210309222635.png" alt="1611380682649" style="zoom:50%;" />
+<h4 id="case3">case3</h4>
+<p>输入：2个句子</p>
+<p>输出：分类结果</p>
+<p>常见任务：推断任务</p>
+<figure data-type="image" tabindex="6"><img src="https://raw.githubusercontent.com/MaXXXXfeng/typora-res/main/data/20210309222644.png" alt="1611381332418" loading="lazy"></figure>
+<h4 id="case4">case4</h4>
+<p>QA类任务。</p>
+<p><strong>任务介绍：</strong></p>
+<p>输入为 文本(document)和问题(query),通过模型，输出答案的起始位置。对应区间则为问题的答案。</p>
+<p>假设：如果问题可回答，答案一定可以从文本中抽取，无需生成答案。</p>
+<figure data-type="image" tabindex="7"><img src="https://raw.githubusercontent.com/MaXXXXfeng/typora-res/main/data/20210309222701.png" alt="1611383919461" loading="lazy"></figure>
+<p><strong>bert-QA任务</strong></p>
+<p>引入两个可以学习的向量分别代表答案的起点和终点位置。</p>
+<p><strong>squad 1.1(问题皆可回答)</strong></p>
+<p>S(start)和E(end)分别</p>
+<p>与document经过bert的输出向量做点乘，结果中概率最大的值为对应的索引的位置。</p>
+<p>实际计算中，会计算起点终点加和最高作为答案区间。</p>
+<p class='katex-block'><span class="katex-display"><span class="katex"><span class="katex-mathml"><math><semantics><mrow><msub><mi>s</mi><mrow><mi>i</mi><mi>j</mi></mrow></msub><mo>=</mo><mi>m</mi><mi>a</mi><msub><mi>x</mi><mrow><mi>j</mi><mo>&gt;</mo><mo>=</mo><mi>i</mi></mrow></msub><mi>S</mi><mo separator="true">⋅</mo><msub><mi>T</mi><mi>i</mi></msub><mo>+</mo><mi>E</mi><mo separator="true">⋅</mo><msub><mi>T</mi><mi>j</mi></msub></mrow><annotation encoding="application/x-tex">s_{ij}=max_{j&gt;=i}S·T_{i} + E·T_{j}
+</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.716668em;vertical-align:-0.286108em;"></span><span class="mord"><span class="mord mathdefault">s</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.311664em;"><span style="top:-2.5500000000000003em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathdefault mtight">i</span><span class="mord mathdefault mtight" style="margin-right:0.05724em;">j</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.286108em;"><span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:0.969438em;vertical-align:-0.286108em;"></span><span class="mord mathdefault">m</span><span class="mord mathdefault">a</span><span class="mord"><span class="mord mathdefault">x</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.311664em;"><span style="top:-2.5500000000000003em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathdefault mtight" style="margin-right:0.05724em;">j</span><span class="mrel mtight">&gt;</span><span class="mrel mtight">=</span><span class="mord mathdefault mtight">i</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.286108em;"><span></span></span></span></span></span></span><span class="mord mathdefault" style="margin-right:0.05764em;">S</span><span class="mpunct">⋅</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord"><span class="mord mathdefault" style="margin-right:0.13889em;">T</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.31166399999999994em;"><span style="top:-2.5500000000000003em;margin-left:-0.13889em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathdefault mtight">i</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.969438em;vertical-align:-0.286108em;"></span><span class="mord mathdefault" style="margin-right:0.05764em;">E</span><span class="mpunct">⋅</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord"><span class="mord mathdefault" style="margin-right:0.13889em;">T</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.311664em;"><span style="top:-2.5500000000000003em;margin-left:-0.13889em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathdefault mtight" style="margin-right:0.05724em;">j</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.286108em;"><span></span></span></span></span></span></span></span></span></span></span></p>
+<p>S和E各自的损失函数加和，作为训练过程中的损失函数。</p>
+<figure data-type="image" tabindex="8"><img src="https://raw.githubusercontent.com/MaXXXXfeng/typora-res/main/data/20210309222707.png" alt="1611384094107" loading="lazy"></figure>
+<p><strong>squad 2.0(部分问题无答案)</strong></p>
+<ul>
+<li>
+<p>不可回答问题： 起点和终点索引均指向cls。起点大于终点也可被看作无答案。</p>
+</li>
+<li>
+<p>答案计算过程：</p>
+</li>
+</ul>
+<p>最佳可回答答案得分:</p>
+<p class='katex-block'><span class="katex-display"><span class="katex"><span class="katex-mathml"><math><semantics><mrow><msub><mi>s</mi><mrow><mi>i</mi><mi>j</mi></mrow></msub><mo>=</mo><mi>m</mi><mi>a</mi><msub><mi>x</mi><mrow><mi>j</mi><mo>&gt;</mo><mo>=</mo><mi>i</mi></mrow></msub><mi>S</mi><mo separator="true">⋅</mo><msub><mi>T</mi><mi>i</mi></msub><mo>+</mo><mi>E</mi><mo separator="true">⋅</mo><msub><mi>T</mi><mi>j</mi></msub></mrow><annotation encoding="application/x-tex">s_{ij}=max_{j&gt;=i}S·T_{i} + E·T_{j}
+</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.716668em;vertical-align:-0.286108em;"></span><span class="mord"><span class="mord mathdefault">s</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.311664em;"><span style="top:-2.5500000000000003em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathdefault mtight">i</span><span class="mord mathdefault mtight" style="margin-right:0.05724em;">j</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.286108em;"><span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:0.969438em;vertical-align:-0.286108em;"></span><span class="mord mathdefault">m</span><span class="mord mathdefault">a</span><span class="mord"><span class="mord mathdefault">x</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.311664em;"><span style="top:-2.5500000000000003em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathdefault mtight" style="margin-right:0.05724em;">j</span><span class="mrel mtight">&gt;</span><span class="mrel mtight">=</span><span class="mord mathdefault mtight">i</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.286108em;"><span></span></span></span></span></span></span><span class="mord mathdefault" style="margin-right:0.05764em;">S</span><span class="mpunct">⋅</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord"><span class="mord mathdefault" style="margin-right:0.13889em;">T</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.31166399999999994em;"><span style="top:-2.5500000000000003em;margin-left:-0.13889em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathdefault mtight">i</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.969438em;vertical-align:-0.286108em;"></span><span class="mord mathdefault" style="margin-right:0.05764em;">E</span><span class="mpunct">⋅</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord"><span class="mord mathdefault" style="margin-right:0.13889em;">T</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.311664em;"><span style="top:-2.5500000000000003em;margin-left:-0.13889em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathdefault mtight" style="margin-right:0.05724em;">j</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.286108em;"><span></span></span></span></span></span></span></span></span></span></span></p>
+<p>不可回答得分：</p>
+<p class='katex-block'><span class="katex-display"><span class="katex"><span class="katex-mathml"><math><semantics><mrow><msub><mi>s</mi><mrow><mi>n</mi><mi>u</mi><mi>l</mi><mi>l</mi></mrow></msub><mo>=</mo><mi>S</mi><mo separator="true">⋅</mo><mi>C</mi><mo>+</mo><mi>E</mi><mo separator="true">⋅</mo><mi>C</mi></mrow><annotation encoding="application/x-tex">s_{null}=S·C+E·C
+</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.58056em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord mathdefault">s</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.33610799999999996em;"><span style="top:-2.5500000000000003em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathdefault mtight">n</span><span class="mord mathdefault mtight">u</span><span class="mord mathdefault mtight" style="margin-right:0.01968em;">l</span><span class="mord mathdefault mtight" style="margin-right:0.01968em;">l</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:0.76666em;vertical-align:-0.08333em;"></span><span class="mord mathdefault" style="margin-right:0.05764em;">S</span><span class="mpunct">⋅</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord mathdefault" style="margin-right:0.07153em;">C</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.68333em;vertical-align:0em;"></span><span class="mord mathdefault" style="margin-right:0.05764em;">E</span><span class="mpunct">⋅</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord mathdefault" style="margin-right:0.07153em;">C</span></span></span></span></span></p>
+<p>答案非空标准：</p>
+<p class='katex-block'><span class="katex-display"><span class="katex"><span class="katex-mathml"><math><semantics><mrow><msub><mi>s</mi><mi>i</mi></msub><mi>j</mi><mo>&gt;</mo><msub><mi>s</mi><mrow><mi>n</mi><mi>u</mi><mi>l</mi><mi>l</mi></mrow></msub><mo>+</mo><mi>τ</mi></mrow><annotation encoding="application/x-tex">s_ij &gt; s_{null} + \tau
+</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.85396em;vertical-align:-0.19444em;"></span><span class="mord"><span class="mord mathdefault">s</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.31166399999999994em;"><span style="top:-2.5500000000000003em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathdefault mtight">i</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mord mathdefault" style="margin-right:0.05724em;">j</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">&gt;</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:0.73333em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord mathdefault">s</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.33610799999999996em;"><span style="top:-2.5500000000000003em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathdefault mtight">n</span><span class="mord mathdefault mtight">u</span><span class="mord mathdefault mtight" style="margin-right:0.01968em;">l</span><span class="mord mathdefault mtight" style="margin-right:0.01968em;">l</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.43056em;vertical-align:0em;"></span><span class="mord mathdefault" style="margin-right:0.1132em;">τ</span></span></span></span></span></p>
+<h4 id="其他类型">其他类型</h4>
+<ul>
+<li>
+<p>bert可以看成word2vec的升级版，因此可以使用bert替换原有任务中的word2vec，对输入的文本进行向量化。如文本分类，将第一步的向量化使用bert。命名实体任务：把word2vec+bilstm+crf修改为bert+bilstm+crf。</p>
+</li>
+<li>
+<p>分类任务除了可以使用cls的输出结果，也可以将各个token的向量作为后续计算的向量。接入不同的分类器。</p>
+</li>
+<li>
+<p>文本抽取类可以参考case4，将两个输入改为只输入一个句子，计算起点和终点的位置。也可以参考case2，对每一个token做分类，判断是否属于抽取内容。也可基于bert抽取的结果，做更复杂的操作。</p>
+</li>
+</ul>
+<h2 id="5-代码应用">5 代码应用</h2>
+<p>TensorFlow版本：谷歌官方 https://github.com/google-research/bert</p>
+<p>pytorch版本(推荐)： transformers第三方库</p>
+<pre><code class="language-python">
+pip install transformers
+
+import torch
+
+from transformers import BertModel, BertTokenizer
+
+# 可以通过名字直接加载模型 或 事先下载模型此处为模型路径
+
+model_name = 'bert-base-uncased'
+
+# 读取模型对应的tokenizer
+
+tokenizer = BertTokenizer.from_pretrained(model_name)
+
+# 载入模型
+
+model = BertModel.from_pretrained(model_name)
+
+# 输入文本
+
+input_text = &quot;Here is some text to encode&quot;
+
+# 通过tokenizer把文本变成 token_id
+
+input_ids = tokenizer.encode(input_text, add_special_tokens=True)
+
+# input_ids: [101, 2182, 2003, 2070, 3793, 2000, 4372, 16044, 102]
+
+# encode会自动添加标记符
+
+tokenizer.convert_ids_to_tokens(input_ids)
+
+['[CLS]', 'here', 'is', 'some', 'text', 'to', 'en', '##code', '[SEP]']
+
+input_ids = torch.tensor([input_ids])
+
+# 获得BERT模型输出
+
+output = model(input_ids)
+
+last_hidden_state = output[0] # batch_size * seq_length * hidden_size
+
+pooler_output = output[1] # batch_size * hidden_size, first token(cls)
+
+# 冻结bert参数
+
+# BertModel
+
+for param in model.parameters():
+
+param.requires_grad = False
+
+# eg: BertForSequenceClassification
+
+for param in model.bert.parameters():
+
+param.requires_grad = False
+
+</code></pre>
+<p>更多细节用法参考：</p>
+<p>https://huggingface.co/transformers/quicktour.html</p>
+<h2 id="参考文献">参考文献</h2>
+<p><a href="https://arxiv.org/abs/1706.03762">[1] Attention is all you needed</a></p>
+<p><a href="https://arxiv.org/abs/1810.04805">[2] BERT: Pre-training of Deep Bidirectional Transformers for Language Understanding</a></p>
+
+              </div>
+              <div class="toc-container">
+                <ul class="markdownIt-TOC">
+<li>
+<ul>
+<li><a href="#1-%E4%BB%8B%E7%BB%8D">1 介绍</a></li>
+<li><a href="#2-%E6%A8%A1%E5%9E%8B">2 模型</a>
+<ul>
+<li><a href="#21-%E5%9F%BA%E6%9C%AC%E7%BB%93%E6%9E%84">2.1 基本结构</a>
+<ul>
+<li><a href="#%E8%BE%93%E5%85%A5%E8%A1%A8%E7%A4%BA">输入表示</a>
+<ul>
+<li><a href="#token_embedding-%E8%AF%8D%E5%90%91%E9%87%8F">token_embedding: 词向量</a></li>
+<li><a href="#segment_embedding-%E5%8F%A5%E5%90%91%E9%87%8F">segment_embedding: 句向量</a></li>
+<li><a href="#position_embedding-%E4%BD%8D%E7%BD%AE%E5%90%91%E9%87%8F">position_embedding: 位置向量</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#22-%E5%90%84%E5%B1%82%E4%BD%9C%E7%94%A8">2.2 各层作用</a></li>
+</ul>
+</li>
+<li><a href="#3-%E6%A8%A1%E5%9E%8B%E8%AE%AD%E7%BB%83">3 模型训练</a>
+<ul>
+<li><a href="#%E8%AE%AD%E7%BB%83%E4%BB%BB%E5%8A%A11masked-lm">训练任务1：Masked LM</a></li>
+<li><a href="#%E8%AE%AD%E7%BB%83%E4%BB%BB%E5%8A%A12next-sentence-predictionnsp">训练任务2：Next Sentence Prediction(NSP)</a></li>
+</ul>
+</li>
+<li><a href="#4-%E5%85%B7%E4%BD%93%E4%BD%BF%E7%94%A8">4 具体使用</a><br>
+*
+<ul>
+<li><a href="#case1">case1</a></li>
+<li><a href="#case2">case2</a></li>
+<li><a href="#case3">case3</a></li>
+<li><a href="#case4">case4</a></li>
+<li><a href="#%E5%85%B6%E4%BB%96%E7%B1%BB%E5%9E%8B">其他类型</a></li>
+</ul>
+</li>
+<li><a href="#5-%E4%BB%A3%E7%A0%81%E5%BA%94%E7%94%A8">5 代码应用</a></li>
+<li><a href="#%E5%8F%82%E8%80%83%E6%96%87%E7%8C%AE">参考文献</a></li>
+</ul>
+</li>
+</ul>
+
+              </div>
+            </div>
+          </article>
+        </div>
+
+        
+          <div class="next-post">
+            <div class="next">下一篇</div>
+            <a href="https://MaXXXXfeng.github.io/post/transformer-zong-jie/">
+              <h3 class="post-title">
+                Transformer总结
+              </h3>
+            </a>
+          </div>
+        
+
+        
+          
+            <link rel="stylesheet" href="https://unpkg.com/gitalk/dist/gitalk.css">
+<script src="https://unpkg.com/gitalk/dist/gitalk.min.js"></script>
+
+<div id="gitalk-container"></div>
+
+<script>
+
+  var gitalk = new Gitalk({
+    clientID: 'd4340f15bb5174d34269',
+    clientSecret: 'a8044523d5c79dc56062fcdaae7bbc97731a09ad',
+    repo: 'MaXXXXfeng.github.io',
+    owner: 'MaXXXXfeng',
+    admin: ['MaXXXXfeng'],
+    id: (location.pathname).substring(0, 49),      // Ensure uniqueness and length less than 50
+    distractionFreeMode: false  // Facebook-like distraction free mode
+  })
+
+  gitalk.render('gitalk-container')
+
+</script>
+
+          
+
+          
+        
+
+        <div class="site-footer">
+  Powered by <a href="https://github.com/getgridea/gridea" target="_blank">Gridea</a> | 
+  <a class="rss" href="https://MaXXXXfeng.github.io/atom.xml" target="_blank">RSS</a>
+</div>
+
+<script>
+  hljs.initHighlightingOnLoad()
+
+  let mainNavLinks = document.querySelectorAll(".markdownIt-TOC a");
+
+  // This should probably be throttled.
+  // Especially because it triggers during smooth scrolling.
+  // https://lodash.com/docs/4.17.10#throttle
+  // You could do like...
+  // window.addEventListener("scroll", () => {
+  //    _.throttle(doThatStuff, 100);
+  // });
+  // Only not doing it here to keep this Pen dependency-free.
+
+  window.addEventListener("scroll", event => {
+    let fromTop = window.scrollY;
+
+    mainNavLinks.forEach((link, index) => {
+      let section = document.getElementById(decodeURI(link.hash).substring(1));
+      let nextSection = null
+      if (mainNavLinks[index + 1]) {
+        nextSection = document.getElementById(decodeURI(mainNavLinks[index + 1].hash).substring(1));
+      }
+      console.log('section.offsetHeight', section.offsetHeight);
+      if (section.offsetTop <= fromTop) {
+        if (nextSection) {
+          if (nextSection.offsetTop > fromTop) {
+            link.classList.add("current");
+          } else {
+            link.classList.remove("current");    
+          }
+        } else {
+          link.classList.add("current");
+        }
+      } else {
+        link.classList.remove("current");
+      }
+    });
+  });
+
+</script>
+
+      </div>
+    </div>
+  </body>
+</html>
